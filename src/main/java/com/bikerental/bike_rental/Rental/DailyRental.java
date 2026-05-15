@@ -1,6 +1,7 @@
 package com.bikerental.bike_rental.Rental;
 
 public class DailyRental extends Rental {
+
     private int days;
     private double ratePerDay;
 
@@ -14,11 +15,29 @@ public class DailyRental extends Rental {
 
     @Override
     public double calculateFee() {
-        return days * ratePerDay;
+        double total = days * ratePerDay;
+        return total;
     }
 
-    public int getDays() { return days; }
-    public void setDays(int days) { this.days = days; }
-    public double getRatePerDay() { return ratePerDay; }
-    public void setRatePerDay(double ratePerDay) { this.ratePerDay = ratePerDay; }
+    public int getDays() {
+        return days;
+    }
+
+    public void setDays(int days) {
+        if (days > 0) {
+            this.days = days;
+        }
+    }
+
+    public double getRatePerDay() {
+        return ratePerDay;
+    }
+
+    public void setRatePerDay(double ratePerDay) {
+        this.ratePerDay = ratePerDay;
+    }
+
+    public String getRentalSummary() {
+        return "Rental ID: " + getRentalId() + " | Days: " + days + " | Total: LKR " + calculateFee();
+    }
 }
