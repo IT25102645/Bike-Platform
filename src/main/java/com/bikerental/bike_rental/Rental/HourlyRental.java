@@ -1,6 +1,7 @@
 package com.bikerental.bike_rental.Rental;
 
 public class HourlyRental extends Rental {
+
     private int hours;
     private double ratePerHour;
 
@@ -14,11 +15,29 @@ public class HourlyRental extends Rental {
 
     @Override
     public double calculateFee() {
-        return hours * ratePerHour;
+        double total = hours * ratePerHour;
+        return total;
     }
 
-    public int getHours() { return hours; }
-    public void setHours(int hours) { this.hours = hours; }
-    public double getRatePerHour() { return ratePerHour; }
-    public void setRatePerHour(double ratePerHour) { this.ratePerHour = ratePerHour; }
+    public int getHours() {
+        return hours;
+    }
+
+    public void setHours(int hours) {
+        if (hours > 0) {
+            this.hours = hours;
+        }
+    }
+
+    public double getRatePerHour() {
+        return ratePerHour;
+    }
+
+    public void setRatePerHour(double ratePerHour) {
+        this.ratePerHour = ratePerHour;
+    }
+
+    public String getRentalSummary() {
+        return "Rental ID: " + getRentalId() + " | Hours: " + hours + " | Total: LKR " + calculateFee();
+    }
 }
