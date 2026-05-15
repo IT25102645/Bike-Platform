@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Return Bike</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-content">
+        <h2 class="page-title">🔄 Return Bike</h2>
+        <div style="background: white; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 2rem; max-width: 500px;">
+            <form th:action="@{/rentals/return/{id}(id=${rentalId})}" method="post">
+                <div class="mb-3">
+                    <label style="font-size: 14px; color: #555; display: block; margin-bottom: 4px;">Rental ID</label>
+                    <input type="text" class="form-control" th:value="${rentalId}" readonly
+                           style="border-radius: 8px; background: #f8f9fa;">
+                </div>
+                <div class="mb-3">
+                    <label style="font-size: 14px; color: #555; display: block; margin-bottom: 4px;">Return Date</label>
+                    <input type="date" name="endDate" class="form-control" required style="border-radius: 8px;">
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 1rem;">
+                    <button type="submit" class="btn-main">Return Bike</button>
+                    <a href="/rentals" style="background: transparent; color: #1a1a2e; border: 1px solid #1a1a2e; padding: 8px 20px; border-radius: 8px; text-decoration: none;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
