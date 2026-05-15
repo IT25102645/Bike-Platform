@@ -7,15 +7,17 @@
 <div layout:fragment="content">
     <div class="page-content">
         <h2 class="page-title">🚲 Rent a Bike</h2>
-        <div style="background: white; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 2rem; max-width: 600px;">
+        <div style="background: white; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
             <form action="/rentals/rent" method="post">
-                <div class="mb-3">
-                    <label style="font-size: 14px; color: #555; display: block; margin-bottom: 4px;">User ID</label>
-                    <input type="text" name="userId" class="form-control" required style="border-radius: 8px;">
-                </div>
-                <div class="mb-3">
-                    <label style="font-size: 14px; color: #555; display: block; margin-bottom: 4px;">Bike ID</label>
-                    <input type="text" name="bikeId" class="form-control" required style="border-radius: 8px;">
+                <div class="row">
+                    <div class="col mb-3">
+                        <label style="font-size: 14px; color: #555; display: block; margin-bottom: 4px;">User ID</label>
+                        <input type="text" name="userId" class="form-control" required style="border-radius: 8px;">
+                    </div>
+                    <div class="col mb-3">
+                        <label style="font-size: 14px; color: #555; display: block; margin-bottom: 4px;">Bike ID</label>
+                        <input type="text" name="bikeId" class="form-control" required style="border-radius: 8px;">
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col mb-3">
