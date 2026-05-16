@@ -17,11 +17,29 @@
     </style>
 </head>
 <body>
-    <h1>Welcome to Bike Platform</h1>
-    <p>The most reliable bike rental system.</p>
-    <div class="links">
-        <a href="/users/login" class="btn btn-primary">Login</a>
-        <a href="/users/register" class="btn btn-outline">Register</a>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/static">🚲 Bike Platform</a>
+        <div class="navbar-nav ms-auto d-flex flex-row gap-1">
+            <a class="nav-link" th:href="@{/bikes}">Bikes</a>
+            <a class="nav-link" th:href="@{/rentals}">Rentals</a>
+            <a class="nav-link" th:href="@{/rides}">Rides</a>
+            <a class="nav-link" th:href="@{/payments}">Payments</a>
+            <a class="nav-link" th:href="@{/reviews}">Reviews</a>
+            <a class="nav-link" th:href="@{/users}">Users</a>
+        </div>
     </div>
+</nav>
+
+<!-- Page Content -->
+<div layout:fragment="content"></div>
+
+<!-- Footer -->
+<div class="footer">
+    © 2026 <span>Bike Platform</span> · SE1020 OOP Project · SLIIT
+</div>
+
 </body>
 </html>
