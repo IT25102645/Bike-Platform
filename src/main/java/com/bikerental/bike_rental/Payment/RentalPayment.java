@@ -1,29 +1,28 @@
 package com.bikerental.bike_rental.Payment;
 
-// Inheritance
+// Inheritance - RentalPayment extends Payment
 public class RentalPayment extends Payment {
 
-    private String rentalId;
-    private int rentalDuration; // hours or days
-    private double rate;
+    private String rentalId;      // matches RentalService → "RENT-1"
+    private int    durationHours;
+    private double pricePerHour;
 
-    public RentalPayment() {
-        super();
-    }
+    public RentalPayment() {}
 
     public RentalPayment(String paymentId, String userId, String rentalId,
-                         int duration, double rate, String date, String status) {
-        super(paymentId, userId, 0, date, status);
-        this.rentalId       = rentalId;
-        this.rentalDuration = duration;
-        this.rate           = rate;
+                         int durationHours, double pricePerHour,
+                         String paymentDate, String status) {
+        super(paymentId, userId, 0, paymentDate, status);
+        this.rentalId      = rentalId;
+        this.durationHours = durationHours;
+        this.pricePerHour  = pricePerHour;
         this.setAmount(calculatePayment());
     }
 
-    // Polymorphism - Rental cost calculation
+    // Polymorphism - Rental fee calculation
     @Override
     public double calculatePayment() {
-        return rentalDuration * rate;
+        return durationHours * pricePerHour;
     }
 
     @Override
@@ -32,18 +31,18 @@ public class RentalPayment extends Payment {
     }
 
     // Getters
-    public String getRentalId()       { return rentalId; }
-    public int    getRentalDuration() { return rentalDuration; }
-    public double getRate()           { return rate; }
+    public String getRentalId()      { return rentalId; }
+    public int    getDurationHours() { return durationHours; }
+    public double getPricePerHour()  { return pricePerHour; }
 
     // Setters
-    public void setRentalId(String rentalId)           { this.rentalId       = rentalId; }
-    public void setRentalDuration(int rentalDuration)   { this.rentalDuration = rentalDuration; }
-    public void setRate(double rate)                   { this.rate           = rate; }
+    public void setRentalId(String rentalId)         { this.rentalId      = rentalId; }
+    public void setDurationHours(int durationHours)  { this.durationHours = durationHours; }
+    public void setPricePerHour(double pricePerHour) { this.pricePerHour  = pricePerHour; }
 
     // File string - extends parent toFileString
     @Override
     public String toFileString() {
-        return super.toFileString() + "|" + rentalId + "|" + rentalDuration + "|" + rate;
+        return super.toFileString() + "|" + rentalId + "|" + durationHours + "|" + pricePerHour;
     }
 }

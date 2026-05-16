@@ -6,9 +6,9 @@ public class RideReview extends Review {
     // Ride-specific fields
     private String rideId;
     private double rideDistanceKm;
-    private int rideDurationMinutes;
+    private int    rideDurationMinutes;
     private String routeExperience;
-    private int safetyRating;
+    private int    safetyRating;
 
     // Default constructor
     public RideReview() {
@@ -19,8 +19,7 @@ public class RideReview extends Review {
     public RideReview(String reviewId, String userId, String username,
                       int rating, String comment, String date,
                       String rideId, double rideDistanceKm,
-                      int rideDurationMinutes, String routeExperience,
-                      int safetyRating) {
+                      int rideDurationMinutes, String routeExperience, int safetyRating) {
         super(reviewId, userId, username, rating, comment, date);
         this.rideId              = rideId;
         this.rideDistanceKm      = rideDistanceKm;
@@ -38,11 +37,11 @@ public class RideReview extends Review {
     // Polymorphism - different display format for ride review
     @Override
     public String getDisplaySummary() {
-        return "[Ride: " + rideId + "] " + getUsername() +
-                " rated " + getRating() + "/5 | Distance: " + rideDistanceKm + "km" +
-                " | Safety: " + safetyRating + "/5" +
-                " | Experience: " + routeExperience +
-                " | " + getComment();
+        return "[Ride #" + rideId + "] " + getUsername() +
+                " rated " + getRating() + "/5 | " +
+                rideDistanceKm + " km in " + rideDurationMinutes + " min | " +
+                "Route: " + routeExperience + " | Safety: " + safetyRating + "/5 | " +
+                getComment();
     }
 
     // Getters
@@ -53,10 +52,10 @@ public class RideReview extends Review {
     public int    getSafetyRating()        { return safetyRating; }
 
     // Setters
-    public void setRideId(String rideId)                       { this.rideId              = rideId; }
-    public void setRideDistanceKm(double rideDistanceKm)       { this.rideDistanceKm      = rideDistanceKm; }
-    public void setRideDurationMinutes(int rideDurationMinutes) { this.rideDurationMinutes = rideDurationMinutes; }
-    public void setRouteExperience(String routeExperience)     { this.routeExperience     = routeExperience; }
+    public void setRideId(String rideId)                      { this.rideId              = rideId; }
+    public void setRideDistanceKm(double rideDistanceKm)      { this.rideDistanceKm      = rideDistanceKm; }
+    public void setRideDurationMinutes(int rideDurationMinutes){ this.rideDurationMinutes = rideDurationMinutes; }
+    public void setRouteExperience(String routeExperience)    { this.routeExperience     = routeExperience; }
     public void setSafetyRating(int safetyRating)             { this.safetyRating        = safetyRating; }
 
     // File handling - adds ride fields to parent file string

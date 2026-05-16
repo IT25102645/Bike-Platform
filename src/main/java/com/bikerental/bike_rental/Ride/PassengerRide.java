@@ -4,28 +4,28 @@ package com.bikerental.bike_rental.Ride;
 public class PassengerRide extends Ride {
 
     private String driverRideId;
-    private double costPerSeat;
+    private double farePerSeat;
 
     public PassengerRide() {}
 
     public PassengerRide(String rideId, String userId, String origin, String destination,
-                         String rideDate, String rideTime, int seatsToBook,
-                         String status, String driverRideId, double costPerSeat) {
-        super(rideId, userId, origin, destination, rideDate, rideTime, seatsToBook, status);
+                         String rideDate, String rideTime, int availableSeats,
+                         String status, String driverRideId, double farePerSeat) {
+        super(rideId, userId, origin, destination, rideDate, rideTime, availableSeats, status);
         this.driverRideId = driverRideId;
-        this.costPerSeat  = costPerSeat;
+        this.farePerSeat  = farePerSeat;
     }
 
     public String getDriverRideId() { return driverRideId; }
-    public double getCostPerSeat()  { return costPerSeat; }
+    public double getFarePerSeat()  { return farePerSeat; }
 
     public void setDriverRideId(String driverRideId) { this.driverRideId = driverRideId; }
-    public void setCostPerSeat(double costPerSeat)   { this.costPerSeat  = costPerSeat; }
+    public void setFarePerSeat(double farePerSeat)   { this.farePerSeat  = farePerSeat; }
 
-    // Polymorphism - Passenger pays based on booked seats
+    // Polymorphism - Passenger pays fare per seat
     @Override
     public double calculateCost() {
-        return costPerSeat * getAvailableSeats(); // here seats = seatsToBook
+        return farePerSeat;
     }
 
     @Override
@@ -35,6 +35,6 @@ public class PassengerRide extends Ride {
 
     @Override
     public String toFileString() {
-        return super.toFileString() + "|" + driverRideId + "|" + costPerSeat;
+        return super.toFileString() + "|" + driverRideId + "|" + farePerSeat;
     }
 }

@@ -1,89 +1,122 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rent a Bike - Bike Platform</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Rent a Bike</title>
     <style>
-        .rent-container {
-            max-width: 600px;
-            margin: 4rem auto;
+        .form-card { background: white; border: 1px solid #ddd; border-radius: 4px; padding: 24px; max-width: 620px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 3px;
+            font-size: 13px; color: #333; background: #fafafa;
         }
-
-        .bike-preview {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
+        .form-group input:focus, .form-group select:focus {
+            outline: none; border-color: #0057b8; background: white;
         }
-
-        .bike-preview img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .alert { padding: 10px 14px; border-radius: 3px; font-size: 13px; margin-bottom: 16px; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .btn-secondary { background: #6c757d; color: white; border: none; padding: 8px 20px; border-radius: 3px; font-size: 13px; cursor: pointer; text-decoration: none; }
+        .btn-secondary:hover { background: #5a6268; color: white; }
+        .price-preview { background: #f7faff; border: 1px solid #e0e8f0; border-radius: 4px; padding: 14px; margin-top: 8px; }
+        .price-preview p { font-size: 13px; color: #555; margin: 0; }
+        .price-preview strong { color: #0057b8; font-size: 15px; }
     </style>
 </head>
 <body>
+<div layout:fragment="content">
+    <div class="page-content">
+        <div class="page-title">Rent a Bike</div>
 
-<nav class="navbar">
-    <a class="navbar-brand" href="/">Bike Rental Platform</a>
-    <div class="nav-links">
-        <a class="nav-link" href="/">Home</a>
-        <a class="nav-link" href="/bikes">Back to Bikes</a>
-    </div>
-</nav>
+        <!-- Error Message -->
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-<div class="container rent-container">
-    <div class="card">
-        <h2 style="margin-bottom: 1.5rem;">Confirm Rental</h2>
-        
-        <div class="bike-preview" th:if="${bike != null}">
-            <img th:src="${bike.type == 'ELECTRIC' ? 'https://images.unsplash.com/photo-1593764592116-bfb2a97c642a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' : 'https://images.unsplash.com/photo-1532298229144-0ee0b6659d31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}" alt="Bike">
-            <div>
-                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);" th:text="${bike.brand}">GIANT</div>
-                <h3 th:text="${bike.model}">Trance Pro</h3>
-                <div style="color: var(--primary-color); font-weight: 700;">Rs. <span th:text="${bike.pricePerHour}">500</span>/hr</div>
-            </div>
+        <div class="form-card">
+            <form th:action="@{/rentals/rent}" method="post">
+
+                <!-- User ID & Bike ID -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userId">User ID</label>
+                        <input type="text" id="userId" name="userId" placeholder="e.g. U123456" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="bikeId">Bike ID</label>
+                        <input type="text" id="bikeId" name="bikeId" placeholder="e.g. BIKE-001" required />
+                    </div>
+                </div>
+
+                <!-- Rental Type -->
+                <div class="form-group">
+                    <label for="rentalType">Rental Type</label>
+                    <select id="rentalType" name="rentalType" onchange="updateRateLabel(this.value)" required>
+                        <option value="HOURLY">Hourly Rental</option>
+                        <option value="DAILY">Daily Rental</option>
+                    </select>
+                </div>
+
+                <!-- Start & End Date -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startDate">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" th:min="${minDate}" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">End Date</label>
+                        <input type="date" id="endDate" name="endDate" th:min="${minDate}" required />
+                    </div>
+                </div>
+
+                <!-- Duration & Rate -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="duration" id="durationLabel">Duration (Hours)</label>
+                        <input type="number" id="duration" name="duration" min="1" placeholder="e.g. 3" required onchange="calculateTotal()" />
+                    </div>
+                    <div class="form-group">
+                        <label for="rate" id="rateLabel">Rate Per Hour (LKR)</label>
+                        <input type="number" id="rate" name="rate" step="0.01" min="0" placeholder="e.g. 250" required onchange="calculateTotal()" />
+                    </div>
+                </div>
+
+                <!-- Price Preview -->
+                <div class="price-preview">
+                    <p>Estimated Total: <strong id="totalPrice">LKR 0.00</strong></p>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex gap-3 mt-3">
+                    <button type="submit" class="btn-main">Confirm Rental</button>
+                    <a th:href="@{/rentals}" class="btn-secondary">Cancel</a>
+                </div>
+
+            </form>
         </div>
-
-        <form th:action="@{/rentals/rent}" method="POST">
-            <input type="hidden" name="bikeId" th:value="${bike.bikeId}" th:if="${bike != null}">
-            
-            <div class="form-group">
-                <label for="userId">YOUR USER ID</label>
-                <input type="text" id="userId" name="userId" class="form-control" placeholder="U123..." required>
-            </div>
-
-            <div class="form-group">
-                <label for="type">RENTAL TYPE</label>
-                <select id="type" name="type" class="form-control" required>
-                    <option value="HOURLY">Hourly Rental</option>
-                    <option value="DAILY">Daily Rental</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="duration">DURATION (HOURS/DAYS)</label>
-                <input type="number" id="duration" name="duration" class="form-control" value="1" min="1" required>
-            </div>
-
-            <div style="margin-top: 2rem;">
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">Confirm and Pay</button>
-            </div>
-        </form>
     </div>
 </div>
 
-<footer>
-    <p>&copy; 2026 Bike Rental Platform. All rights reserved.</p>
-</footer>
+<script>
+    function updateRateLabel(type) {
+        const durationLabel = document.getElementById('durationLabel');
+        const rateLabel     = document.getElementById('rateLabel');
+        if (type === 'DAILY') {
+            durationLabel.textContent = 'Duration (Days)';
+            rateLabel.textContent     = 'Rate Per Day (LKR)';
+        } else {
+            durationLabel.textContent = 'Duration (Hours)';
+            rateLabel.textContent     = 'Rate Per Hour (LKR)';
+        }
+        calculateTotal();
+    }
 
+    function calculateTotal() {
+        const duration = parseFloat(document.getElementById('duration').value) || 0;
+        const rate     = parseFloat(document.getElementById('rate').value)     || 0;
+        const total    = duration * rate;
+        document.getElementById('totalPrice').textContent = 'LKR ' + total.toFixed(2);
+    }
+</script>
 </body>
 </html>
