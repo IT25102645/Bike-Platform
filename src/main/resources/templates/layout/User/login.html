@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login – Bike Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI', Arial, sans-serif; background:#0f0f23; min-height:100vh; display:flex; flex-direction:column; }
+
+        /* ── Navbar (matches base) ── */
+        .navbar { background:#1a1a2e; padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:60px; }
+        .navbar-brand { color:#fff; font-size:20px; font-weight:500; text-decoration:none; display:flex; align-items:center; gap:8px; }
+        .navbar-brand i { color:#e94560; }
+        .nav-links { display:flex; gap:4px; }
+        .nav-link { color:rgba(255,255,255,0.75); text-decoration:none; padding:6px 14px; border-radius:8px; font-size:14px; transition:all 0.2s; }
+        .nav-link:hover, .nav-link.active { background:rgba(255,255,255,0.12); color:#fff; }
+
+        /* ── Page background ── */
+        .page-wrap {
+            flex:1; display:flex; align-items:center; justify-content:center; padding:3rem 1rem;
+            background:linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%);
+        }
+
+        /* ── Two-column card ── */
+        .auth-card {
+            display:grid; grid-template-columns:1fr 1fr;
+            width:100%; max-width:840px;
+            border-radius:16px; overflow:hidden;
+            box-shadow:0 24px 64px rgba(0,0,0,.55);
+        }
+        @media(max-width:640px){ .auth-card{ grid-template-columns:1fr; } .auth-side{ display:none; } }
+
+        /* ── Left decorative panel ── */
+        .auth-side {
+            background:#1a1a2e; padding:3rem 2.5rem;
+            display:flex; flex-direction:column; justify-content:center;
+            border-right:1px solid rgba(255,255,255,0.06);
+        }
+        .auth-side .big-icon { font-size:3rem; color:#e94560; margin-bottom:1.5rem; }
+        .auth-side h2 { font-size:1.6rem; font-weight:600; color:#fff; margin-bottom:.8rem; line-height:1.3; }
+        .auth-side p  { font-size:.9rem; color:rgba(255,255,255,0.55); line-height:1.7; margin-bottom:2rem; }
+        .feat { display:flex; align-items:center; gap:10px; margin-bottom:11px; font-size:.86rem; color:rgba(255,255,255,0.65); }
+        .feat i { color:#e94560; width:15px; font-size:.82rem; }
+
+        /* ── Right form panel ── */
+        .auth-form { background:#16213e; padding:3rem 2.5rem; }
+        .auth-form h1 { font-size:1.5rem; font-weight:600; color:#fff; margin-bottom:.35rem; }
+        .sub { font-size:.86rem; color:rgba(255,255,255,0.45); margin-bottom:2rem; }
+        .sub a { color:#e94560; text-decoration:none; font-weight:500; }
+        .sub a:hover { text-decoration:underline; }
+
+        /* ── Alert banners ── */
+        .alert { padding:10px 14px; border-radius:8px; margin-bottom:1.2rem; font-size:.85rem; font-weight:500; display:none; }
+        .alert-error   { background:rgba(233,69,96,.15);  color:#ff8fa3; border:1px solid rgba(233,69,96,.3); }
+        .alert-success { background:rgba(46,125,50,.18);  color:#81c784; border:1px solid rgba(46,125,50,.3); }
+
+        /* ── Form fields ── */
+        .form-group { margin-bottom:1.2rem; }
+        label.field-label {
+            display:block; font-size:.75rem; font-weight:600;
+            color:rgba(255,255,255,0.45); text-transform:uppercase;
+            letter-spacing:.6px; margin-bottom:.4rem;
+        }
+        .input-wrap { position:relative; display:flex; align-items:center; }
+        .input-wrap i.ico { position:absolute; left:13px; color:rgba(255,255,255,0.28); font-size:.88rem; pointer-events:none; }
+        .input-wrap input {
+            width:100%; padding:11px 42px 11px 38px;
+            background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+            border-radius:8px; font-size:.92rem; color:#fff; font-family:inherit;
+            transition:border-color .2s, background .2s;
+        }
+        .input-wrap input::placeholder { color:rgba(255,255,255,0.2); }
+        .input-wrap input:focus { outline:none; border-color:#e94560; background:rgba(233,69,96,.06); }
+        .toggle-pw { position:absolute; right:12px; background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.28); font-size:.88rem; padding:0; }
+        .toggle-pw:hover { color:#e94560; }
+
+        /* ── Row: remember + forgot ── */
+        .form-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
+        .remember { display:flex; align-items:center; gap:6px; font-size:.82rem; color:rgba(255,255,255,0.45); cursor:pointer; }
+        .remember input[type=checkbox] { accent-color:#e94560; width:14px; height:14px; }
+        .forgot { font-size:.82rem; color:#e94560; text-decoration:none; }
+        .forgot:hover { text-decoration:underline; }
+
+        /* ── Primary button ── */
+        .btn-submit {
+            width:100%; padding:13px; background:#e94560; color:#fff; border:none;
+            border-radius:8px; font-size:.95rem; font-weight:600; font-family:inherit;
+            cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+            transition:background .2s, transform .1s, box-shadow .2s;
+        }
+        .btn-submit:hover { background:#c73652; box-shadow:0 8px 24px rgba(233,69,96,.35); transform:translateY(-1px); }
+        .btn-submit:active { transform:translateY(0); }
+
+        /* ── Divider ── */
+        .divider { text-align:center; color:rgba(255,255,255,0.22); font-size:.78rem; margin:1.4rem 0; position:relative; }
+        .divider::before,.divider::after { content:''; position:absolute; top:50%; width:38%; height:1px; background:rgba(255,255,255,0.08); }
+        .divider::before { left:0; } .divider::after { right:0; }
+
+        /* ── Role chips ── */
+        .role-chips { display:flex; gap:8px; justify-content:center; }
+        .role-chip {
+            padding:6px 16px; border-radius:999px; font-size:.76rem; font-weight:600;
+            text-decoration:none; color:#e94560;
+            border:1px solid rgba(233,69,96,.35); background:rgba(233,69,96,.07);
+            transition:all .2s;
+        }
+        .role-chip:hover { background:rgba(233,69,96,.18); border-color:#e94560; }
+
+        /* ── Footer ── */
+        footer { background:#1a1a2e; text-align:center; padding:1rem; font-size:.8rem; color:rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+    <a class="navbar-brand" href="/">
+        <i class="fas fa-bicycle"></i> Bike Platform
+    </a>
+    <div class="nav-links">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link" href="#">Bikes</a>
+        <a class="nav-link" href="#">Rentals</a>
+        <a class="nav-link" href="#">Rides</a>
+        <a class="nav-link" href="#">Payments</a>
+        <a class="nav-link" href="#">Reviews</a>
+        <a class="nav-link active" href="/users/login">Login</a>
+    </div>
+</nav>
+
+<!-- ── Page ── -->
+<div class="page-wrap">
+    <div class="auth-card">
+
+        <!-- Left panel -->
+        <div class="auth-side">
+            <div class="big-icon"><i class="fas fa-bicycle"></i></div>
+            <h2>Welcome Back</h2>
+            <p>Log in to access your account and manage rentals, rides, and payments.</p>
+            <div class="feat"><i class="fas fa-check-circle"></i> View your rental history</div>
+            <div class="feat"><i class="fas fa-check-circle"></i> Manage active bookings</div>
+            <div class="feat"><i class="fas fa-check-circle"></i> Track shared rides</div>
+            <div class="feat"><i class="fas fa-check-circle"></i> Access payment records</div>
+            <div class="feat"><i class="fas fa-check-circle"></i> Submit bike reviews</div>
+        </div>
+
+        <!-- Right form -->
+        <div class="auth-form">
+            <h1>Sign In</h1>
+            <p class="sub">Don't have an account? <a href="/users/register">Register here</a></p>
+
+            <div class="alert alert-error"   id="errorAlert"></div>
+            <div class="alert alert-success" id="successAlert"></div>
+
+            <div class="form-group">
+                <label class="field-label">Email Address</label>
+                <div class="input-wrap">
+                    <i class="fas fa-envelope ico"></i>
+                    <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="field-label">Password</label>
+                <div class="input-wrap">
+                    <i class="fas fa-lock ico"></i>
+                    <input type="password" id="password" placeholder="Enter your password"/>
+                    <button class="toggle-pw" type="button" onclick="togglePw('password',this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label class="remember">
+                    <input type="checkbox" id="remember"/> Remember me
+                </label>
+                <a href="#" class="forgot">Forgot password?</a>
+            </div>
+
+            <button class="btn-submit" onclick="loginUser()">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+
+            <div class="divider">or continue as</div>
+            <div class="role-chips">
+                <a href="register.html?role=RIDER" class="role-chip"><i class="fas fa-biking"></i> Rider</a>
+                <a href="register.html?role=OWNER" class="role-chip"><i class="fas fa-key"></i> Bike Owner</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<footer>&copy; 2026 Bike Platform. All rights reserved.</footer>
+
+<script>
+    // ── Toggle password
+    function togglePw(id, btn) {
+        const inp  = document.getElementById(id);
+        const icon = btn.querySelector('i');
+        const show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        icon.classList.toggle('fa-eye',       !show);
+        icon.classList.toggle('fa-eye-slash',  show);
+    }
+
+    // ── Alert helper
+    function showAlert(id, msg) {
+        document.getElementById('errorAlert').style.display   = 'none';
+        document.getElementById('successAlert').style.display = 'none';
+        const el = document.getElementById(id);
+        el.textContent   = msg;
+        el.style.display = 'block';
+    }
+
+    // ── Login
+    async function loginUser() {
+        const email    = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!email || !password) {
+            return showAlert('errorAlert', 'Please enter your email and password.');
+        }
+
+        // Try Spring Boot backend first
+        try {
+            const res = await fetch('/users/login', {
+                method : 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body   : new URLSearchParams({ email, password })
+            });
+
+            if (res.ok) {
+                const user = await res.json();
+                localStorage.setItem('loggedInUser', JSON.stringify(user));
+                showAlert('successAlert', 'Welcome back, ' + user.name + '! Redirecting...');
+                setTimeout(() => window.location.href = '/', 1200);
+                return;
+            } else {
+                showAlert('errorAlert', 'Invalid email or password. Please try again.');
+                return;
+            }
+        } catch (err) {
+            // Backend not running — use localStorage demo mode
+        }
+
+        // Demo fallback
+        const users = JSON.parse(localStorage.getItem('bp_users') || '[]');
+        const user  = users.find(u => u.email === email && u.password === password);
+
+        if (!user) {
+            return showAlert('errorAlert', 'Invalid email or password.');
+        }
+
+        localStorage.setItem('loggedInUser', JSON.stringify(user));
+        showAlert('successAlert', 'Welcome back, ' + user.name + '! Redirecting...');
+        setTimeout(() => window.location.href = '/', 1200);
+    }
+
+    // Enter key support
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') loginUser(); });
+</script>
+</body>
+</html>

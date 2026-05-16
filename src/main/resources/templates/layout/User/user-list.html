@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>User Management – Bike Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI', Arial, sans-serif; background:#0f0f23; min-height:100vh; display:flex; flex-direction:column; color:#fff; }
+
+        /* ══ Navbar ══ */
+        .navbar { background:#1a1a2e; padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:60px; position:sticky; top:0; z-index:100; box-shadow:0 2px 12px rgba(0,0,0,.4); }
+        .navbar-brand { color:#fff; font-size:20px; font-weight:500; text-decoration:none; display:flex; align-items:center; gap:8px; }
+        .navbar-brand i { color:#e94560; }
+        .nav-links { display:flex; gap:4px; }
+        .nav-link { color:rgba(255,255,255,0.7); text-decoration:none; padding:6px 14px; border-radius:8px; font-size:14px; transition:all .2s; }
+        .nav-link:hover,.nav-link.active { background:rgba(255,255,255,0.12); color:#fff; }
+
+        /* ══ Page ══ */
+        .page { flex:1; padding:2.5rem 2rem; max-width:1200px; margin:0 auto; width:100%; }
+
+        /* ══ Breadcrumb ══ */
+        .breadcrumb { display:flex; align-items:center; gap:8px; font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:1.8rem; }
+        .breadcrumb a { color:rgba(255,255,255,0.4); text-decoration:none; transition:color .2s; }
+        .breadcrumb a:hover { color:#e94560; }
+        .breadcrumb i { font-size:10px; }
+
+        /* ══ Page header ══ */
+        .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.8rem; flex-wrap:wrap; gap:1rem; }
+        .page-title h1 { font-size:1.5rem; font-weight:600; color:#fff; }
+        .page-title p  { font-size:.85rem; color:rgba(255,255,255,0.4); margin-top:.3rem; }
+
+        /* ══ Buttons ══ */
+        .btn {
+            display:inline-flex; align-items:center; gap:7px;
+            padding:9px 18px; border-radius:8px; font-size:.85rem;
+            font-weight:600; font-family:inherit; cursor:pointer; border:none;
+            transition:all .2s; text-decoration:none;
+        }
+        .btn-red   { background:#e94560; color:#fff; }
+        .btn-red:hover { background:#c73652; box-shadow:0 6px 20px rgba(233,69,96,.35); transform:translateY(-1px); }
+        .btn-ghost { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.1); }
+        .btn-ghost:hover { background:rgba(255,255,255,0.1); color:#fff; }
+        .btn-sm { padding:6px 12px; font-size:.78rem; }
+        .btn-icon { padding:7px 10px; }
+        .btn-edit   { background:rgba(52,152,219,.15); color:#74b9ff; border:1px solid rgba(52,152,219,.25); }
+        .btn-edit:hover { background:rgba(52,152,219,.28); }
+        .btn-delete { background:rgba(233,69,96,.12); color:#ff8fa3; border:1px solid rgba(233,69,96,.2); }
+        .btn-delete:hover { background:rgba(233,69,96,.25); }
+        .btn:active { transform:translateY(0) !important; }
+
+        /* ══ Stat cards ══ */
+        .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.8rem; }
+        @media(max-width:700px){ .stats-row{ grid-template-columns:repeat(2,1fr); } }
+        .stat-card {
+            background:#16213e; border:1px solid rgba(255,255,255,0.06);
+            border-radius:12px; padding:1.2rem 1.4rem;
+            display:flex; align-items:center; gap:1rem;
+            transition:border-color .2s;
+        }
+        .stat-card:hover { border-color:rgba(233,69,96,.3); }
+        .stat-icon {
+            width:44px; height:44px; border-radius:10px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.1rem; flex-shrink:0;
+        }
+        .si-all    { background:rgba(233,69,96,.15);  color:#e94560; }
+        .si-rider  { background:rgba(52,152,219,.15); color:#74b9ff; }
+        .si-owner  { background:rgba(46,213,115,.12); color:#5df0a0; }
+        .si-user   { background:rgba(255,255,255,.08); color:rgba(255,255,255,.6); }
+        .stat-info .s-num { font-size:1.5rem; font-weight:600; color:#fff; }
+        .stat-info .s-lbl { font-size:.75rem; color:rgba(255,255,255,.4); margin-top:1px; }
+
+        /* ══ Toolbar ══ */
+        .toolbar {
+            display:flex; align-items:center; gap:10px; margin-bottom:1.2rem;
+            flex-wrap:wrap;
+        }
+        .search-wrap { position:relative; flex:1; min-width:220px; }
+        .search-wrap i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.3); font-size:.88rem; pointer-events:none; }
+        .search-wrap input {
+            width:100%; padding:9px 12px 9px 36px;
+            background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09);
+            border-radius:8px; font-size:.88rem; color:#fff; font-family:inherit;
+            transition:border-color .2s;
+        }
+        .search-wrap input::placeholder { color:rgba(255,255,255,0.22); }
+        .search-wrap input:focus { outline:none; border-color:#e94560; }
+
+        .filter-select {
+            padding:9px 14px; background:rgba(255,255,255,0.05);
+            border:1px solid rgba(255,255,255,0.09); border-radius:8px;
+            font-size:.85rem; color:#fff; font-family:inherit; cursor:pointer;
+            transition:border-color .2s; appearance:none; padding-right:30px;
+        }
+        .filter-select:focus { outline:none; border-color:#e94560; }
+        .select-wrap { position:relative; }
+        .select-wrap i { position:absolute; right:10px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.3); font-size:.75rem; pointer-events:none; }
+
+        /* ══ Table card ══ */
+        .table-card { background:#16213e; border:1px solid rgba(255,255,255,0.06); border-radius:14px; overflow:hidden; }
+        .table-wrap { overflow-x:auto; }
+        table { width:100%; border-collapse:collapse; font-size:.88rem; }
+        thead tr { background:#1a1a2e; }
+        th {
+            padding:12px 16px; text-align:left; font-size:.75rem; font-weight:600;
+            color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:.6px;
+            white-space:nowrap; border-bottom:1px solid rgba(255,255,255,0.06);
+        }
+        th.sortable { cursor:pointer; user-select:none; }
+        th.sortable:hover { color:#e94560; }
+        th i.sort-icon { margin-left:5px; font-size:.65rem; opacity:.5; }
+        tbody tr {
+            border-bottom:1px solid rgba(255,255,255,0.04);
+            transition:background .15s;
+        }
+        tbody tr:last-child { border:none; }
+        tbody tr:hover { background:rgba(255,255,255,0.03); }
+        td { padding:13px 16px; color:rgba(255,255,255,0.75); vertical-align:middle; }
+
+        /* ══ Avatar cell ══ */
+        .user-cell { display:flex; align-items:center; gap:11px; }
+        .mini-avatar {
+            width:36px; height:36px; border-radius:50%; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+            font-size:.88rem; font-weight:700; color:#fff;
+        }
+        .av-red  { background:linear-gradient(135deg,#e94560,#c73652); }
+        .av-blue { background:linear-gradient(135deg,#3498db,#2980b9); }
+        .av-green{ background:linear-gradient(135deg,#27ae60,#1e8449); }
+        .user-name  { font-weight:500; color:#fff; font-size:.9rem; }
+        .user-id    { font-size:.74rem; color:rgba(255,255,255,0.35); margin-top:1px; }
+
+        /* ══ Role badges ══ */
+        .badge {
+            display:inline-flex; align-items:center; gap:5px;
+            padding:3px 10px; border-radius:999px; font-size:.73rem; font-weight:600;
+        }
+        .badge-USER  { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.6); }
+        .badge-RIDER { background:rgba(52,152,219,.18);   color:#74b9ff; }
+        .badge-OWNER { background:rgba(233,69,96,.15);    color:#ff8fa3; }
+
+        /* ══ Actions cell ══ */
+        .action-cell { display:flex; gap:6px; align-items:center; }
+
+        /* ══ Alerts ══ */
+        .alert { padding:10px 14px; border-radius:8px; margin-bottom:1rem; font-size:.85rem; font-weight:500; display:none; }
+        .alert-error   { background:rgba(233,69,96,.15); color:#ff8fa3; border:1px solid rgba(233,69,96,.3); }
+        .alert-success { background:rgba(46,125,50,.18);  color:#81c784; border:1px solid rgba(46,125,50,.3); }
+
+        /* ══ Empty state ══ */
+        .empty-state { text-align:center; padding:3.5rem 2rem; }
+        .empty-state i { font-size:2.5rem; color:rgba(255,255,255,0.12); margin-bottom:1rem; display:block; }
+        .empty-state p { font-size:.9rem; color:rgba(255,255,255,0.3); }
+
+        /* ══ Pagination ══ */
+        .pagination { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.5rem; border-top:1px solid rgba(255,255,255,0.05); flex-wrap:wrap; gap:.8rem; }
+        .pg-info { font-size:.82rem; color:rgba(255,255,255,0.35); }
+        .pg-btns { display:flex; gap:5px; }
+        .pg-btn {
+            width:32px; height:32px; border-radius:7px; border:1px solid rgba(255,255,255,0.09);
+            background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.5);
+            display:flex; align-items:center; justify-content:center;
+            font-size:.8rem; cursor:pointer; transition:all .2s; font-family:inherit;
+        }
+        .pg-btn:hover { border-color:#e94560; color:#e94560; }
+        .pg-btn.active { background:#e94560; border-color:#e94560; color:#fff; }
+        .pg-btn:disabled { opacity:.3; cursor:not-allowed; }
+
+        /* ══ Modal overlay ══ */
+        .modal-overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,.7);
+            display:none; align-items:center; justify-content:center;
+            z-index:1000; padding:1rem; backdrop-filter:blur(4px);
+        }
+        .modal-overlay.open { display:flex; }
+        .modal {
+            background:#16213e; border:1px solid rgba(255,255,255,0.1);
+            border-radius:16px; width:100%; max-width:520px;
+            box-shadow:0 24px 64px rgba(0,0,0,.6);
+            animation:modalIn .2s ease;
+        }
+        @keyframes modalIn { from{ opacity:0; transform:scale(.96) translateY(8px); } to{ opacity:1; transform:none; } }
+        .modal-header {
+            padding:1.3rem 1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .modal-header h3 { font-size:1rem; font-weight:600; color:#fff; display:flex; align-items:center; gap:8px; }
+        .modal-header h3 i { color:#e94560; }
+        .modal-close { background:none; border:none; color:rgba(255,255,255,0.4); cursor:pointer; font-size:1rem; padding:4px; transition:color .2s; }
+        .modal-close:hover { color:#fff; }
+        .modal-body { padding:1.5rem; }
+        .modal-footer { padding:1rem 1.5rem; border-top:1px solid rgba(255,255,255,0.07); display:flex; justify-content:flex-end; gap:8px; }
+
+        /* ══ Modal form ══ */
+        .m-form-group { margin-bottom:1.1rem; }
+        .m-label { font-size:.75rem; font-weight:600; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:.6px; margin-bottom:.38rem; display:block; }
+        .m-input-wrap { position:relative; display:flex; align-items:center; }
+        .m-input-wrap i.ico { position:absolute; left:12px; color:rgba(255,255,255,0.25); font-size:.85rem; pointer-events:none; }
+        .m-input-wrap input, .m-input-wrap select {
+            width:100%; padding:10px 13px 10px 36px;
+            background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09);
+            border-radius:8px; font-size:.9rem; color:#fff; font-family:inherit;
+            transition:border-color .2s;
+        }
+        .m-input-wrap input::placeholder { color:rgba(255,255,255,0.18); }
+        .m-input-wrap input:focus, .m-input-wrap select:focus { outline:none; border-color:#e94560; background:rgba(233,69,96,.06); }
+        .m-input-wrap select option { background:#16213e; }
+        .m-grid { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
+        .m-full { grid-column:1/-1; }
+        .extra-modal { display:none; }
+        .extra-modal.visible { display:contents; }
+
+        /* ══ View modal ══ */
+        .view-row { display:flex; justify-content:space-between; align-items:center; padding:.75rem 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .view-row:last-child { border:none; }
+        .view-label { font-size:.78rem; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:.4px; }
+        .view-val   { font-size:.88rem; color:rgba(255,255,255,0.8); font-weight:500; }
+
+        /* ══ Delete confirm modal ══ */
+        .delete-modal-body { text-align:center; padding:1rem 0; }
+        .delete-icon { font-size:2.5rem; color:#e94560; margin-bottom:1rem; }
+        .delete-modal-body h4 { font-size:1rem; color:#fff; margin-bottom:.5rem; }
+        .delete-modal-body p  { font-size:.85rem; color:rgba(255,255,255,0.45); line-height:1.6; }
+
+        /* ══ Footer ══ */
+        footer { background:#1a1a2e; text-align:center; padding:1rem; font-size:.8rem; color:rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+
+<!-- ══ Navbar ══ -->
+<nav class="navbar">
+    <a class="navbar-brand" href="/">
+        <i class="fas fa-bicycle"></i> Bike Platform
+    </a>
+    <div class="nav-links">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link" href="#">Bikes</a>
+        <a class="nav-link" href="#">Rentals</a>
+        <a class="nav-link" href="#">Rides</a>
+        <a class="nav-link" href="#">Payments</a>
+        <a class="nav-link" href="#">Reviews</a>
+        <a class="nav-link active" href="/users/list">Users</a>
+    </div>
+</nav>
+
+<!-- ══ Page ══ -->
+<div class="page">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="/">Home</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>User Management</span>
+    </div>
+
+    <!-- Page header -->
+    <div class="page-header">
+        <div class="page-title">
+            <h1>User Management</h1>
+            <p>Manage all registered users — General Users, Riders and Bike Owners</p>
+        </div>
+        <button class="btn btn-red" onclick="openAddModal()">
+            <i class="fas fa-user-plus"></i> Add User
+        </button>
+    </div>
+
+    <!-- Global alerts -->
+    <div class="alert alert-error"   id="globalError"></div>
+    <div class="alert alert-success" id="globalSuccess"></div>
+
+    <!-- ══ Stats ══ -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon si-all"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+                <div class="s-num" id="statAll">0</div>
+                <div class="s-lbl">Total Users</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon si-rider"><i class="fas fa-biking"></i></div>
+            <div class="stat-info">
+                <div class="s-num" id="statRider">0</div>
+                <div class="s-lbl">Riders</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon si-owner"><i class="fas fa-key"></i></div>
+            <div class="stat-info">
+                <div class="s-num" id="statOwner">0</div>
+                <div class="s-lbl">Bike Owners</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon si-user"><i class="fas fa-user"></i></div>
+            <div class="stat-info">
+                <div class="s-num" id="statUser">0</div>
+                <div class="s-lbl">General Users</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ Table card ══ -->
+    <div class="table-card">
+
+        <!-- Toolbar -->
+        <div style="padding:1.2rem 1.5rem; border-bottom:1px solid rgba(255,255,255,0.06);">
+            <div class="toolbar">
+                <div class="search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search by name, email or ID..." oninput="applyFilters()"/>
+                </div>
+                <div class="select-wrap">
+                    <select class="filter-select" id="roleFilter" onchange="applyFilters()">
+                        <option value="">All Roles</option>
+                        <option value="USER">General User</option>
+                        <option value="RIDER">Rider</option>
+                        <option value="OWNER">Bike Owner</option>
+                    </select>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="select-wrap">
+                    <select class="filter-select" id="sortSelect" onchange="applyFilters()">
+                        <option value="name-asc">Name A–Z</option>
+                        <option value="name-desc">Name Z–A</option>
+                        <option value="id-asc">ID Ascending</option>
+                        <option value="role">Sort by Role</option>
+                    </select>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="loadUsers()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrap">
+            <table id="usersTable">
+                <thead>
+                <tr>
+                    <th class="sortable" onclick="sortBy('name')">User <i class="fas fa-sort sort-icon"></i></th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th class="sortable" onclick="sortBy('role')">Role <i class="fas fa-sort sort-icon"></i></th>
+                    <th>Extra Info</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="tableBody">
+                <tr><td colspan="6"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading users...</p></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <div class="pg-info" id="pgInfo">Showing 0 of 0 users</div>
+            <div class="pg-btns" id="pgBtns"></div>
+        </div>
+
+    </div>
+</div><!-- /page -->
+
+<footer>&copy; 2026 Bike Platform. All rights reserved.</footer>
+
+<!-- ══════════════════════════════════════════
+     ADD / EDIT USER MODAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="addEditModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle"><i class="fas fa-user-plus"></i> Add New User</h3>
+            <button class="modal-close" onclick="closeModal('addEditModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="alert alert-error" id="modalError"></div>
+
+            <!-- Role selector inside modal -->
+            <div style="margin-bottom:1rem;">
+                <div class="m-label">Role</div>
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:7px;">
+                    <div class="btn btn-ghost btn-sm role-pick selected-role" data-role="USER"  onclick="pickRole('USER',this)"  style="justify-content:center; flex-direction:column; padding:10px 6px; gap:4px;">
+                        <i class="fas fa-user" style="font-size:1.1rem;"></i><span style="font-size:.74rem;">General</span>
+                    </div>
+                    <div class="btn btn-ghost btn-sm role-pick" data-role="RIDER" onclick="pickRole('RIDER',this)" style="justify-content:center; flex-direction:column; padding:10px 6px; gap:4px;">
+                        <i class="fas fa-biking" style="font-size:1.1rem;"></i><span style="font-size:.74rem;">Rider</span>
+                    </div>
+                    <div class="btn btn-ghost btn-sm role-pick" data-role="OWNER" onclick="pickRole('OWNER',this)" style="justify-content:center; flex-direction:column; padding:10px 6px; gap:4px;">
+                        <i class="fas fa-key" style="font-size:1.1rem;"></i><span style="font-size:.74rem;">Owner</span>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="modalRole" value="USER"/>
+            <input type="hidden" id="modalUserId" value=""/>
+
+            <div class="m-grid">
+                <div class="m-form-group">
+                    <label class="m-label">Full Name *</label>
+                    <div class="m-input-wrap"><i class="fas fa-user ico"></i><input type="text" id="mName" placeholder="Kamal Perera"/></div>
+                </div>
+                <div class="m-form-group">
+                    <label class="m-label">Phone *</label>
+                    <div class="m-input-wrap"><i class="fas fa-phone ico"></i><input type="tel" id="mPhone" placeholder="+94 7X XXX XXXX"/></div>
+                </div>
+                <div class="m-form-group m-full">
+                    <label class="m-label">Email *</label>
+                    <div class="m-input-wrap"><i class="fas fa-envelope ico"></i><input type="email" id="mEmail" placeholder="user@example.com"/></div>
+                </div>
+                <div class="m-form-group">
+                    <label class="m-label">Password *</label>
+                    <div class="m-input-wrap"><i class="fas fa-lock ico"></i><input type="password" id="mPassword" placeholder="Min 6 chars"/></div>
+                </div>
+                <div class="m-form-group">
+                    <label class="m-label">Confirm Password *</label>
+                    <div class="m-input-wrap"><i class="fas fa-lock ico"></i><input type="password" id="mConfirm" placeholder="Repeat password"/></div>
+                </div>
+
+                <!-- RIDER extras -->
+                <div class="extra-modal m-full" id="mRiderExtra">
+                    <div class="m-form-group">
+                        <label class="m-label">License Number</label>
+                        <div class="m-input-wrap"><i class="fas fa-id-card ico"></i><input type="text" id="mLicense" placeholder="e.g. B1234567"/></div>
+                    </div>
+                </div>
+
+                <!-- OWNER extras -->
+                <div class="extra-modal" id="mOwnerExtra1">
+                    <div class="m-form-group">
+                        <label class="m-label">Business Name</label>
+                        <div class="m-input-wrap"><i class="fas fa-store ico"></i><input type="text" id="mBusiness" placeholder="e.g. Nimal Rentals"/></div>
+                    </div>
+                </div>
+                <div class="extra-modal" id="mOwnerExtra2">
+                    <div class="m-form-group">
+                        <label class="m-label">Bank Account</label>
+                        <div class="m-input-wrap"><i class="fas fa-university ico"></i><input type="text" id="mBank" placeholder="e.g. 123456789"/></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost btn-sm" onclick="closeModal('addEditModal')">Cancel</button>
+            <button class="btn btn-red btn-sm" id="modalSaveBtn" onclick="saveUser()">
+                <i class="fas fa-save"></i> Save User
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     VIEW USER MODAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="viewModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-eye"></i> User Details</h3>
+            <button class="modal-close" onclick="closeModal('viewModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="viewModalBody">
+            <!-- filled by JS -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost btn-sm" onclick="closeModal('viewModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DELETE CONFIRM MODAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal" style="max-width:400px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-trash-alt"></i> Delete User</h3>
+            <button class="modal-close" onclick="closeModal('deleteModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="delete-modal-body">
+                <div class="delete-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <h4>Are you sure?</h4>
+                <p>You are about to delete <strong id="deleteUserName" style="color:#fff;"></strong>.<br/>This action cannot be undone.</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost btn-sm" onclick="closeModal('deleteModal')">Cancel</button>
+            <button class="btn btn-delete btn-sm" id="confirmDeleteBtn" onclick="executeDelete()">
+                <i class="fas fa-trash-alt"></i> Yes, Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ══ State ══════════════════════════════════════════════════════
+    let allUsers      = [];
+    let filteredUsers = [];
+    let deleteTargetId = null;
+    let editMode       = false;
+    const ROWS_PER_PAGE = 6;
+    let currentPage     = 1;
+
+    // ══ Load users ═════════════════════════════════════════════════
+    async function loadUsers() {
+        try {
+            const res = await fetch('/users/list', { headers:{ 'Accept':'application/json' } });
+            if (res.ok) {
+                allUsers = await res.json();
+                applyFilters();
+                return;
+            }
+        } catch(e) { /* fallback */ }
+
+        // Demo data from localStorage + seed
+        const stored = JSON.parse(localStorage.getItem('bp_users') || '[]');
+        const seed = [
+            { userId:'U001', name:'Kamal Perera',          email:'kamal@bike.lk',   password:'pass123',  phone:'0771234567', role:'RIDER', licenseNumber:'B1234567', totalRides:5 },
+            { userId:'U002', name:'Nimal Silva',            email:'nimal@bike.lk',   password:'owner456', phone:'0761234567', role:'OWNER', bankAccount:'123456789',  businessName:'NimalBikes', totalBikesListed:4 },
+            { userId:'U003', name:'Admin User',             email:'admin@bike.lk',   password:'admin123', phone:'0712345678', role:'USER'  },
+            { userId:'U004', name:'Saman Kumara',           email:'saman@bike.lk',   password:'saman789', phone:'0751234567', role:'RIDER', licenseNumber:'B9876543', totalRides:12 },
+            { userId:'U005', name:'Priya Fernando',         email:'priya@bike.lk',   password:'priya456', phone:'0741234567', role:'OWNER', bankAccount:'987654321',  businessName:'PriyaRentals', totalBikesListed:7 },
+            { userId:'U006', name:'Dilshan Jayawardena',    email:'dilshan@bike.lk', password:'dil123',   phone:'0721234567', role:'RIDER', licenseNumber:'B4567890', totalRides:3 },
+            { userId:'U007', name:'Chamari Dias',           email:'chamari@bike.lk', password:'cha789',   phone:'0731234567', role:'USER'  },
+            { userId:'U008', name:'Roshan Bandara',         email:'roshan@bike.lk',  password:'ros456',   phone:'0711234567', role:'OWNER', bankAccount:'456789123',  businessName:'RoshanBikes', totalBikesListed:2 },
+        ];
+        // Merge seed with localStorage (avoid duplicates)
+        const storedIds = stored.map(u => u.userId);
+        allUsers = [...seed.filter(u => !storedIds.includes(u.userId)), ...stored];
+        applyFilters();
+    }
+
+    // ══ Apply filters + sort ═══════════════════════════════════════
+    function applyFilters() {
+        const q    = document.getElementById('searchInput').value.toLowerCase().trim();
+        const role = document.getElementById('roleFilter').value;
+        const sort = document.getElementById('sortSelect').value;
+
+        filteredUsers = allUsers.filter(u => {
+            const matchQ    = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.userId.toLowerCase().includes(q);
+            const matchRole = !role || u.role === role;
+            return matchQ && matchRole;
+        });
+
+        // Sort
+        filteredUsers.sort((a,b) => {
+            if (sort === 'name-asc')  return a.name.localeCompare(b.name);
+            if (sort === 'name-desc') return b.name.localeCompare(a.name);
+            if (sort === 'id-asc')    return a.userId.localeCompare(b.userId);
+            if (sort === 'role')      return a.role.localeCompare(b.role);
+            return 0;
+        });
+
+        currentPage = 1;
+        updateStats();
+        renderTable();
+        renderPagination();
+    }
+
+    // ══ Update stat counters ════════════════════════════════════════
+    function updateStats() {
+        document.getElementById('statAll').textContent   = allUsers.length;
+        document.getElementById('statRider').textContent = allUsers.filter(u=>u.role==='RIDER').length;
+        document.getElementById('statOwner').textContent = allUsers.filter(u=>u.role==='OWNER').length;
+        document.getElementById('statUser').textContent  = allUsers.filter(u=>u.role==='USER').length;
+    }
+
+    // ══ Render table ════════════════════════════════════════════════
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        const start = (currentPage - 1) * ROWS_PER_PAGE;
+        const page  = filteredUsers.slice(start, start + ROWS_PER_PAGE);
+
+        if (page.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fas fa-users-slash"></i><p>No users found.</p></div></td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = page.map(u => {
+            const avClass = u.role==='RIDER' ? 'av-blue' : u.role==='OWNER' ? 'av-green' : 'av-red';
+            const initial = u.name ? u.name.charAt(0).toUpperCase() : '?';
+            const extra   = u.role==='RIDER'
+                ? `<span style="font-size:.78rem;color:rgba(255,255,255,.45);">License: ${u.licenseNumber||'—'}</span><br><span style="font-size:.74rem;color:rgba(255,255,255,.3);">Rides: ${u.totalRides||0}</span>`
+                : u.role==='OWNER'
+                    ? `<span style="font-size:.78rem;color:rgba(255,255,255,.45);">${u.businessName||'—'}</span><br><span style="font-size:.74rem;color:rgba(255,255,255,.3);">Bikes: ${u.totalBikesListed||0}</span>`
+                    : `<span style="font-size:.78rem;color:rgba(255,255,255,.3);">—</span>`;
+
+            return `
+      <tr>
+        <td>
+          <div class="user-cell">
+            <div class="mini-avatar ${avClass}">${initial}</div>
+            <div>
+              <div class="user-name">${u.name}</div>
+              <div class="user-id">${u.userId}</div>
+            </div>
+          </div>
+        </td>
+        <td style="color:rgba(255,255,255,.6);font-size:.85rem;">${u.email}</td>
+        <td style="color:rgba(255,255,255,.55);font-size:.85rem;">${u.phone}</td>
+        <td><span class="badge badge-${u.role}"><i class="fas ${u.role==='RIDER'?'fa-biking':u.role==='OWNER'?'fa-key':'fa-user'}"></i>${u.role}</span></td>
+        <td>${extra}</td>
+        <td>
+          <div class="action-cell">
+            <button class="btn btn-ghost btn-sm btn-icon" onclick="viewUser('${u.userId}')" title="View"><i class="fas fa-eye"></i></button>
+            <button class="btn btn-edit btn-sm"           onclick="openEditModal('${u.userId}')"><i class="fas fa-pen"></i></button>
+            <button class="btn btn-delete btn-sm"         onclick="openDeleteModal('${u.userId}')"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        </td>
+      </tr>`;
+        }).join('');
+    }
+
+    // ══ Pagination ══════════════════════════════════════════════════
+    function renderPagination() {
+        const total = filteredUsers.length;
+        const pages = Math.ceil(total / ROWS_PER_PAGE);
+        const start = (currentPage - 1) * ROWS_PER_PAGE + 1;
+        const end   = Math.min(currentPage * ROWS_PER_PAGE, total);
+
+        document.getElementById('pgInfo').textContent = total === 0
+            ? 'No users found'
+            : `Showing ${start}–${end} of ${total} users`;
+
+        const container = document.getElementById('pgBtns');
+        container.innerHTML = '';
+
+        // Prev
+        const prev = document.createElement('button');
+        prev.className = 'pg-btn'; prev.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        prev.disabled  = currentPage === 1;
+        prev.onclick   = () => { currentPage--; renderTable(); renderPagination(); };
+        container.appendChild(prev);
+
+        // Page numbers
+        for (let i = 1; i <= pages; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'pg-btn' + (i === currentPage ? ' active' : '');
+            btn.textContent = i;
+            btn.onclick = () => { currentPage = i; renderTable(); renderPagination(); };
+            container.appendChild(btn);
+        }
+
+        // Next
+        const next = document.createElement('button');
+        next.className = 'pg-btn'; next.innerHTML = '<i class="fas fa-chevron-right"></i>';
+        next.disabled  = currentPage === pages || pages === 0;
+        next.onclick   = () => { currentPage++; renderTable(); renderPagination(); };
+        container.appendChild(next);
+    }
+
+    // ══ Sort shortcut ══════════════════════════════════════════════
+    function sortBy(field) {
+        const s = document.getElementById('sortSelect');
+        s.value = field === 'name' ? 'name-asc' : 'role';
+        applyFilters();
+    }
+
+    // ══ View modal ═════════════════════════════════════════════════
+    function viewUser(userId) {
+        const u = allUsers.find(x => x.userId === userId);
+        if (!u) return;
+        let rows = `
+      <div class="view-row"><span class="view-label">User ID</span><span class="view-val">${u.userId}</span></div>
+      <div class="view-row"><span class="view-label">Name</span><span class="view-val">${u.name}</span></div>
+      <div class="view-row"><span class="view-label">Email</span><span class="view-val">${u.email}</span></div>
+      <div class="view-row"><span class="view-label">Phone</span><span class="view-val">${u.phone}</span></div>
+      <div class="view-row"><span class="view-label">Role</span><span class="view-val"><span class="badge badge-${u.role}">${u.role}</span></span></div>`;
+        if (u.role === 'RIDER') {
+            rows += `
+      <div class="view-row"><span class="view-label">License No.</span><span class="view-val">${u.licenseNumber||'—'}</span></div>
+      <div class="view-row"><span class="view-label">Total Rides</span><span class="view-val">${u.totalRides||0}</span></div>`;
+        } else if (u.role === 'OWNER') {
+            rows += `
+      <div class="view-row"><span class="view-label">Business</span><span class="view-val">${u.businessName||'—'}</span></div>
+      <div class="view-row"><span class="view-label">Bank Acc.</span><span class="view-val">••••${(u.bankAccount||'').slice(-4)||'—'}</span></div>
+      <div class="view-row"><span class="view-label">Bikes Listed</span><span class="view-val">${u.totalBikesListed||0}</span></div>`;
+        }
+        document.getElementById('viewModalBody').innerHTML = rows;
+        openModal('viewModal');
+    }
+
+    // ══ Add modal ══════════════════════════════════════════════════
+    function openAddModal() {
+        editMode = false;
+        document.getElementById('modalTitle').innerHTML  = '<i class="fas fa-user-plus"></i> Add New User';
+        document.getElementById('modalSaveBtn').innerHTML = '<i class="fas fa-save"></i> Save User';
+        document.getElementById('modalUserId').value = '';
+        clearModalFields();
+        pickRole('USER', document.querySelector('[data-role="USER"]'));
+        openModal('addEditModal');
+    }
+
+    // ══ Edit modal ═════════════════════════════════════════════════
+    function openEditModal(userId) {
+        const u = allUsers.find(x => x.userId === userId);
+        if (!u) return;
+        editMode = true;
+        document.getElementById('modalTitle').innerHTML  = '<i class="fas fa-pen"></i> Edit User';
+        document.getElementById('modalSaveBtn').innerHTML = '<i class="fas fa-save"></i> Update User';
+        document.getElementById('modalUserId').value = u.userId;
+        document.getElementById('mName').value     = u.name    || '';
+        document.getElementById('mPhone').value    = u.phone   || '';
+        document.getElementById('mEmail').value    = u.email   || '';
+        document.getElementById('mPassword').value = '';
+        document.getElementById('mConfirm').value  = '';
+        document.getElementById('mLicense').value  = u.licenseNumber  || '';
+        document.getElementById('mBusiness').value = u.businessName   || '';
+        document.getElementById('mBank').value     = u.bankAccount    || '';
+        pickRole(u.role || 'USER', document.querySelector(`[data-role="${u.role||'USER'}"]`));
+        openModal('addEditModal');
+    }
+
+    // ══ Save user (add or edit) ════════════════════════════════════
+    async function saveUser() {
+        const userId   = document.getElementById('modalUserId').value;
+        const name     = document.getElementById('mName').value.trim();
+        const phone    = document.getElementById('mPhone').value.trim();
+        const email    = document.getElementById('mEmail').value.trim();
+        const password = document.getElementById('mPassword').value;
+        const confirm  = document.getElementById('mConfirm').value;
+        const role     = document.getElementById('modalRole').value;
+        const license  = document.getElementById('mLicense').value.trim();
+        const business = document.getElementById('mBusiness').value.trim();
+        const bank     = document.getElementById('mBank').value.trim();
+
+        // Validate
+        if (!name || !phone || !email)
+            return showModalAlert('Please fill in name, phone and email.');
+        if (!editMode && !password)
+            return showModalAlert('Password is required for new users.');
+        if (!editMode && password !== confirm)
+            return showModalAlert('Passwords do not match.');
+        if (!editMode && password.length < 6)
+            return showModalAlert('Password must be at least 6 characters.');
+        if (role === 'RIDER' && !license)
+            return showModalAlert('License number is required for Riders.');
+        if (role === 'OWNER' && !bank)
+            return showModalAlert('Bank account is required for Bike Owners.');
+
+        const body = new URLSearchParams({ name, phone, email, password, role, licenseNumber:license, bankAccount:bank, businessName:business });
+
+        if (editMode) {
+            // UPDATE
+            try {
+                const res = await fetch(`/users/update/${userId}`, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body });
+                if (res.ok) { closeModal('addEditModal'); loadUsers(); showGlobal('success','User updated successfully.'); return; }
+            } catch(e){}
+
+            // Demo
+            const idx = allUsers.findIndex(u => u.userId === userId);
+            if (idx !== -1) {
+                allUsers[idx] = { ...allUsers[idx], name, phone, email, role, licenseNumber:license, bankAccount:bank, businessName:business };
+                if (password) allUsers[idx].password = password;
+                saveToLocalStorage();
+            }
+            closeModal('addEditModal'); applyFilters(); showGlobal('success','User updated successfully.');
+
+        } else {
+            // CREATE
+            const newId = 'U' + Date.now();
+            try {
+                const res = await fetch('/users/register', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body });
+                if (res.ok) { closeModal('addEditModal'); loadUsers(); showGlobal('success','User added successfully.'); return; }
+            } catch(e){}
+
+            // Demo
+            allUsers.push({ userId:newId, name, phone, email, password, role, licenseNumber:license, bankAccount:bank, businessName:business, totalRides:0, totalBikesListed:0 });
+            saveToLocalStorage();
+            closeModal('addEditModal'); applyFilters(); showGlobal('success',`User added! ID: ${newId}`);
+        }
+    }
+
+    // ══ Delete ═════════════════════════════════════════════════════
+    function openDeleteModal(userId) {
+        const u = allUsers.find(x => x.userId === userId);
+        if (!u) return;
+        deleteTargetId = userId;
+        document.getElementById('deleteUserName').textContent = u.name;
+        openModal('deleteModal');
+    }
+
+    async function executeDelete() {
+        try {
+            const res = await fetch(`/users/delete/${deleteTargetId}`, { method:'POST' });
+            if (res.ok) { closeModal('deleteModal'); loadUsers(); showGlobal('success','User deleted.'); return; }
+        } catch(e){}
+
+        // Demo
+        allUsers = allUsers.filter(u => u.userId !== deleteTargetId);
+        saveToLocalStorage();
+        closeModal('deleteModal');
+        applyFilters();
+        showGlobal('success','User deleted successfully.');
+    }
+
+    // ══ Modal helpers ══════════════════════════════════════════════
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function pickRole(role, el) {
+        document.querySelectorAll('.role-pick').forEach(b => {
+            b.classList.remove('selected-role');
+            b.style.borderColor   = '';
+            b.style.background    = '';
+            b.style.color         = '';
+        });
+        el.style.borderColor = '#e94560';
+        el.style.background  = 'rgba(233,69,96,.12)';
+        el.style.color       = '#e94560';
+        document.getElementById('modalRole').value = role;
+        document.getElementById('mRiderExtra').classList.toggle('visible',  role === 'RIDER');
+        document.getElementById('mOwnerExtra1').classList.toggle('visible', role === 'OWNER');
+        document.getElementById('mOwnerExtra2').classList.toggle('visible', role === 'OWNER');
+    }
+
+    function clearModalFields() {
+        ['mName','mPhone','mEmail','mPassword','mConfirm','mLicense','mBusiness','mBank']
+            .forEach(id => document.getElementById(id).value = '');
+        document.getElementById('modalError').style.display = 'none';
+    }
+
+    function showModalAlert(msg) {
+        const el = document.getElementById('modalError');
+        el.textContent   = msg;
+        el.style.display = 'block';
+    }
+
+    function showGlobal(type, msg) {
+        const id = type === 'success' ? 'globalSuccess' : 'globalError';
+        const el = document.getElementById(id);
+        el.textContent   = msg;
+        el.style.display = 'block';
+        setTimeout(() => el.style.display = 'none', 4000);
+    }
+
+    // ══ Close modal on overlay click ══════════════════════════════
+    document.querySelectorAll('.modal-overlay').forEach(ov => {
+        ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
+    });
+
+    // ══ localStorage sync ══════════════════════════════════════════
+    function saveToLocalStorage() {
+        localStorage.setItem('bp_users', JSON.stringify(allUsers));
+    }
+
+    // ══ Init ═══════════════════════════════════════════════════════
+    loadUsers();
+</script>
+</body>
+</html>
