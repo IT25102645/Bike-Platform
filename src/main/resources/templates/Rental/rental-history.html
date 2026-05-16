@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Rental History</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="page-content">
+        <h2 class="page-title">📋 Rental History</h2>
+        <a href="/rentals/rent" class="btn-main" style="text-decoration: none; margin-bottom: 1.5rem; display: inline-block;">+ Rent a Bike</a>
+        <div style="background: white; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 1.5rem; margin-top: 1rem;">
+            <table class="table table-hover" style="margin: 0;">
+                <thead>
+                <tr style="border-bottom: 2px solid #1a1a2e;">
+                    <th style="color: #1a1a2e; font-weight: 500;">Rental ID</th>
+                    <th style="color: #1a1a2e; font-weight: 500;">User ID</th>
+                    <th style="color: #1a1a2e; font-weight: 500;">Bike ID</th>
+                    <th style="color: #1a1a2e; font-weight: 500;">Start Date</th>
+                    <th style="color: #1a1a2e; font-weight: 500;">End Date</th>
+                    <th style="color: #1a1a2e; font-weight: 500;">Status</th>
+                    <th style="color: #1a1a2e; font-weight: 500;">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="rental : ${rentals}">
+                    <td th:text="${rental[0]}"></td>
+                    <td th:text="${rental[1]}"></td>
+                    <td th:text="${rental[2]}"></td>
+                    <td th:text="${rental[3]}"></td>
+                    <td th:text="${rental[4]}"></td>
+                    <td>
+                            <span th:text="${rental[5]}"
+                                  th:style="${rental[5] == 'ACTIVE'} ? 'background:#e8f5e9; color:#2e7d32; padding: 4px 10px; border-radius: 20px; font-size: 12px;' : 'background:#fce4ec; color:#c62828; padding: 4px 10px; border-radius: 20px; font-size: 12px;'">
+                            </span>
+                    </td>
+                    <td>
+                        <a th:href="@{/rentals/return/{id}(id=${rental[0]})}"
+                           style="background: #1a1a2e; color: white; padding: 4px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; margin-right: 4px;">Return</a>
+                        <a th:href="@{/rentals/delete/{id}(id=${rental[0]})}"
+                           style="background: #e94560; color: white; padding: 4px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
