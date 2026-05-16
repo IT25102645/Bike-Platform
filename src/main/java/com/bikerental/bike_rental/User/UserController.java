@@ -1,5 +1,6 @@
 package com.bikerental.bike_rental.User;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,18 +11,16 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     // Inject UserService
+
     @Autowired
     private UserService userService;
 
 
-
     // Show Registration Page
-
     @GetMapping("/register")
     public String showRegisterPage() {
         return "user/register";     // → WEB-INF/views/user/register.jsp
     }
-
 
     // Show Login Page
 
@@ -30,8 +29,7 @@ public class UserController {
         return "user/login";        // → WEB-INF/views/user/login.jsp
     }
 
-
-    //  Show User Profile Page
+    // Show User Profile Page
 
     @GetMapping("/profile/{userId}")
     public String showProfilePage(@PathVariable String userId,
@@ -53,8 +51,7 @@ public class UserController {
         }
     }
 
-
-    //  Show User List Page (Admin)
+    // Show User List Page
 
     @GetMapping("/list")
     public String showUserListPage(Model model) {
@@ -68,7 +65,7 @@ public class UserController {
         }
     }
 
-    //  Show Edit Page
+    // Show Edit Page
 
     @GetMapping("/edit/{userId}")
     public String showEditPage(@PathVariable String userId,
@@ -89,7 +86,6 @@ public class UserController {
             return "user/error";
         }
     }
-
 
 
     //  CREATE - Register new user
@@ -144,7 +140,7 @@ public class UserController {
     }
 
 
-    //  CREATE - LOGIN
+    //  LOGIN
 
     @PostMapping("/login")
     public String loginUser(
@@ -173,7 +169,6 @@ public class UserController {
             return "user/login";
         }
     }
-
 
 
     //  UPDATE - Update user profile
@@ -207,7 +202,7 @@ public class UserController {
         }
     }
 
-    //  UPDATE - Rider license number
+    // UPDATE - Rider license number
 
     @PostMapping("/update/license/{userId}")
     public String updateLicense(
@@ -234,7 +229,7 @@ public class UserController {
         }
     }
 
-    //  UPDATE - Owner bank account
+    // UPDATE - Owner bank account
 
     @PostMapping("/update/bank/{userId}")
     public String updateBankAccount(
@@ -260,7 +255,6 @@ public class UserController {
             return "user/edit";
         }
     }
-
 
 
     //  DELETE - Remove user account

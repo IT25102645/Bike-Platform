@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Register – Bike Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI', Arial, sans-serif; background:#0f0f23; min-height:100vh; display:flex; flex-direction:column; }
+
+        /* ── Navbar ── */
+        .navbar { background:#1a1a2e; padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:60px; }
+        .navbar-brand { color:#fff; font-size:20px; font-weight:500; text-decoration:none; display:flex; align-items:center; gap:8px; }
+        .navbar-brand i { color:#e94560; }
+        .nav-links { display:flex; gap:4px; }
+        .nav-link { color:rgba(255,255,255,0.75); text-decoration:none; padding:6px 14px; border-radius:8px; font-size:14px; transition:all 0.2s; }
+        .nav-link:hover, .nav-link.active { background:rgba(255,255,255,0.12); color:#fff; }
+
+        /* ── Page background ── */
+        .page-wrap {
+            flex:1; display:flex; align-items:flex-start; justify-content:center;
+            padding:3rem 1rem;
+            background:linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%);
+        }
+
+        /* ── Two-column card ── */
+        .auth-card {
+            display:grid; grid-template-columns:320px 1fr;
+            width:100%; max-width:900px;
+            border-radius:16px; overflow:hidden;
+            box-shadow:0 24px 64px rgba(0,0,0,.55);
+        }
+        @media(max-width:680px){ .auth-card{ grid-template-columns:1fr; } .auth-side{ display:none; } }
+
+        /* ── Left panel ── */
+        .auth-side {
+            background:#1a1a2e; padding:3rem 2rem;
+            display:flex; flex-direction:column; justify-content:center;
+            border-right:1px solid rgba(255,255,255,0.06);
+        }
+        .auth-side .big-icon { font-size:3rem; color:#e94560; margin-bottom:1.5rem; }
+        .auth-side h2 { font-size:1.5rem; font-weight:600; color:#fff; margin-bottom:.8rem; line-height:1.3; }
+        .auth-side p  { font-size:.88rem; color:rgba(255,255,255,0.5); line-height:1.7; margin-bottom:2rem; }
+        .feat { display:flex; align-items:center; gap:10px; margin-bottom:11px; font-size:.84rem; color:rgba(255,255,255,0.6); }
+        .feat i { color:#e94560; width:15px; font-size:.8rem; }
+
+        /* ── Right form panel ── */
+        .auth-form { background:#16213e; padding:2.5rem 2.5rem; overflow-y:auto; }
+        .auth-form h1 { font-size:1.5rem; font-weight:600; color:#fff; margin-bottom:.35rem; }
+        .sub { font-size:.85rem; color:rgba(255,255,255,0.4); margin-bottom:1.5rem; }
+        .sub a { color:#e94560; text-decoration:none; font-weight:500; }
+        .sub a:hover { text-decoration:underline; }
+
+        /* ── Role selector ── */
+        .role-label { font-size:.75rem; font-weight:600; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:.6px; margin-bottom:.6rem; }
+        .role-selector { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:1.6rem; }
+        .role-btn {
+            padding:10px 6px; border-radius:10px; text-align:center;
+            border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04);
+            cursor:pointer; transition:all .2s; font-family:inherit;
+        }
+        .role-btn i    { display:block; font-size:1.3rem; color:rgba(255,255,255,0.3); margin-bottom:.4rem; transition:color .2s; }
+        .role-btn span { font-size:.77rem; font-weight:600; color:rgba(255,255,255,0.4); transition:color .2s; }
+        .role-btn:hover { border-color:rgba(233,69,96,.5); }
+        .role-btn:hover i, .role-btn:hover span { color:#e94560; }
+        .role-btn.selected { border-color:#e94560; background:rgba(233,69,96,.1); }
+        .role-btn.selected i, .role-btn.selected span { color:#e94560; }
+
+        /* ── Alerts ── */
+        .alert { padding:10px 14px; border-radius:8px; margin-bottom:1.1rem; font-size:.84rem; font-weight:500; display:none; }
+        .alert-error   { background:rgba(233,69,96,.15); color:#ff8fa3; border:1px solid rgba(233,69,96,.3); }
+        .alert-success { background:rgba(46,125,50,.18);  color:#81c784; border:1px solid rgba(46,125,50,.3); }
+
+        /* ── Form grid ── */
+        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem 1.2rem; }
+        .form-group { display:flex; flex-direction:column; }
+        .form-group.full { grid-column:1/-1; }
+        label.field-label {
+            font-size:.72rem; font-weight:600; color:rgba(255,255,255,0.4);
+            text-transform:uppercase; letter-spacing:.6px; margin-bottom:.38rem;
+        }
+        .input-wrap { position:relative; display:flex; align-items:center; }
+        .input-wrap i.ico { position:absolute; left:13px; color:rgba(255,255,255,0.25); font-size:.86rem; pointer-events:none; }
+        .input-wrap input {
+            width:100%; padding:10px 38px;
+            background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09);
+            border-radius:8px; font-size:.9rem; color:#fff; font-family:inherit;
+            transition:border-color .2s, background .2s;
+        }
+        .input-wrap input::placeholder { color:rgba(255,255,255,0.18); }
+        .input-wrap input:focus { outline:none; border-color:#e94560; background:rgba(233,69,96,.06); }
+        .toggle-pw { position:absolute; right:11px; background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.25); font-size:.86rem; padding:0; }
+        .toggle-pw:hover { color:#e94560; }
+
+        /* ── Section divider inside grid ── */
+        .grid-divider {
+            grid-column:1/-1; display:flex; align-items:center; gap:10px;
+            font-size:.72rem; font-weight:600; color:rgba(255,255,255,0.3);
+            text-transform:uppercase; letter-spacing:.5px; margin:.2rem 0;
+        }
+        .grid-divider::before,.grid-divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.08); }
+
+        /* ── Extra role fields ── */
+        .extra-fields { display:none; }
+        .extra-fields.visible { display:contents; }
+
+        /* ── Password strength ── */
+        .pw-strength { margin-top:.35rem; height:3px; border-radius:3px; background:rgba(255,255,255,0.08); overflow:hidden; }
+        .pw-bar { height:100%; width:0; border-radius:3px; transition:width .3s, background .3s; }
+
+        /* ── Terms row ── */
+        .terms-row {
+            grid-column:1/-1; display:flex; align-items:flex-start; gap:8px;
+            font-size:.81rem; color:rgba(255,255,255,0.4); margin-top:.3rem;
+        }
+        .terms-row input[type=checkbox] { accent-color:#e94560; margin-top:2px; flex-shrink:0; }
+        .terms-row a { color:#e94560; text-decoration:none; }
+
+        /* ── Submit button ── */
+        .btn-submit {
+            grid-column:1/-1; width:100%; padding:13px;
+            background:#e94560; color:#fff; border:none;
+            border-radius:8px; font-size:.95rem; font-weight:600; font-family:inherit;
+            cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+            margin-top:.4rem; transition:background .2s, transform .1s, box-shadow .2s;
+        }
+        .btn-submit:hover { background:#c73652; box-shadow:0 8px 24px rgba(233,69,96,.35); transform:translateY(-1px); }
+        .btn-submit:active { transform:translateY(0); }
+
+        /* ── Footer ── */
+        footer { background:#1a1a2e; text-align:center; padding:1rem; font-size:.8rem; color:rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+    <a class="navbar-brand" href="/">
+        <i class="fas fa-bicycle"></i> Bike Platform
+    </a>
+    <div class="nav-links">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link" href="#">Bikes</a>
+        <a class="nav-link" href="#">Rentals</a>
+        <a class="nav-link" href="#">Rides</a>
+        <a class="nav-link" href="#">Payments</a>
+        <a class="nav-link" href="#">Reviews</a>
+        <a class="nav-link active" href="/users/register">Register</a>
+    </div>
+</nav>
+
+<!-- ── Page ── -->
+<div class="page-wrap">
+    <div class="auth-card">
+
+        <!-- Left panel -->
+        <div class="auth-side">
+            <div class="big-icon"><i class="fas fa-bicycle"></i></div>
+            <h2>Join Bike Platform</h2>
+            <p>Create a free account and start renting bikes or sharing rides today.</p>
+            <div class="feat"><i class="fas fa-check-circle"></i> Free account setup</div>
+            <div class="feat"><i class="fas fa-check-circle"></i> Instant bike booking</div>
+            <div class="feat"><i class="fas fa-check-circle"></i> Share or join rides</div>
+            <div class="feat"><i class="fas fa-check-circle"></i> Secure payments</div>
+            <div class="feat"><i class="fas fa-check-circle"></i> List your own bikes</div>
+        </div>
+
+        <!-- Right form -->
+        <div class="auth-form">
+            <h1>Create Account</h1>
+            <p class="sub">Already have an account? <a href="/users/login">Sign in here</a></p>
+
+            <!-- Role selector -->
+            <div class="role-label">I am a...</div>
+            <div class="role-selector">
+                <div class="role-btn selected" onclick="selectRole('USER',this)">
+                    <i class="fas fa-user"></i><span>General User</span>
+                </div>
+                <div class="role-btn" onclick="selectRole('RIDER',this)">
+                    <i class="fas fa-biking"></i><span>Rider</span>
+                </div>
+                <div class="role-btn" onclick="selectRole('OWNER',this)">
+                    <i class="fas fa-key"></i><span>Bike Owner</span>
+                </div>
+            </div>
+            <input type="hidden" id="selectedRole" value="USER"/>
+
+            <div class="alert alert-error"   id="errorAlert"></div>
+            <div class="alert alert-success" id="successAlert"></div>
+
+            <!-- Form grid -->
+            <div class="form-grid">
+
+                <!-- Basic fields -->
+                <div class="form-group">
+                    <label class="field-label">Full Name</label>
+                    <div class="input-wrap">
+                        <i class="fas fa-user ico"></i>
+                        <input type="text" id="name" placeholder="Kamal Perera"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">Phone Number</label>
+                    <div class="input-wrap">
+                        <i class="fas fa-phone ico"></i>
+                        <input type="tel" id="phone" placeholder="+94 7X XXX XXXX"/>
+                    </div>
+                </div>
+
+                <div class="form-group full">
+                    <label class="field-label">Email Address</label>
+                    <div class="input-wrap">
+                        <i class="fas fa-envelope ico"></i>
+                        <input type="email" id="email" placeholder="you@example.com"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">Password</label>
+                    <div class="input-wrap">
+                        <i class="fas fa-lock ico"></i>
+                        <input type="password" id="password" placeholder="Min 6 characters" oninput="checkStrength(this.value)"/>
+                        <button class="toggle-pw" type="button" onclick="togglePw('password',this)"><i class="fas fa-eye"></i></button>
+                    </div>
+                    <div class="pw-strength"><div class="pw-bar" id="pwBar"></div></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">Confirm Password</label>
+                    <div class="input-wrap">
+                        <i class="fas fa-lock ico"></i>
+                        <input type="password" id="confirmPassword" placeholder="Repeat password"/>
+                        <button class="toggle-pw" type="button" onclick="togglePw('confirmPassword',this)"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+
+                <!-- ── RIDER extra ── -->
+                <div class="extra-fields" id="riderFields">
+                    <div class="grid-divider">Rider details</div>
+                    <div class="form-group full">
+                        <label class="field-label">Driving License Number</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-id-card ico"></i>
+                            <input type="text" id="licenseNumber" placeholder="e.g. B1234567"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── OWNER extra ── -->
+                <div class="extra-fields" id="ownerFields">
+                    <div class="grid-divider">Owner details</div>
+                    <div class="form-group">
+                        <label class="field-label">Business Name</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-store ico"></i>
+                            <input type="text" id="businessName" placeholder="e.g. Nimal Rentals"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Bank Account Number</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-university ico"></i>
+                            <input type="text" id="bankAccount" placeholder="e.g. 123456789"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms -->
+                <div class="terms-row">
+                    <input type="checkbox" id="terms"/>
+                    <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+                </div>
+
+                <!-- Submit -->
+                <button class="btn-submit" onclick="registerUser()">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+
+            </div><!-- /form-grid -->
+        </div><!-- /auth-form -->
+
+    </div><!-- /auth-card -->
+</div><!-- /page-wrap -->
+
+<footer>&copy; 2026 Bike Platform. All rights reserved.</footer>
+
+<script>
+    // ── Role selection
+    function selectRole(role, el) {
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('selectedRole').value = role;
+        document.getElementById('riderFields').classList.toggle('visible', role === 'RIDER');
+        document.getElementById('ownerFields').classList.toggle('visible', role === 'OWNER');
+    }
+
+    // Pre-select from URL param e.g. register.html?role=RIDER
+    window.addEventListener('DOMContentLoaded', () => {
+        const role = new URLSearchParams(window.location.search).get('role');
+        if (role) {
+            const btn = [...document.querySelectorAll('.role-btn')]
+                .find(b => b.querySelector('span').textContent.toUpperCase().includes(role));
+            if (btn) selectRole(role, btn);
+        }
+    });
+
+    // ── Toggle password
+    function togglePw(id, btn) {
+        const inp  = document.getElementById(id);
+        const icon = btn.querySelector('i');
+        const show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        icon.classList.toggle('fa-eye',       !show);
+        icon.classList.toggle('fa-eye-slash',  show);
+    }
+
+    // ── Password strength bar
+    function checkStrength(val) {
+        let score = 0;
+        if (val.length >= 6)                           score++;
+        if (val.length >= 10)                          score++;
+        if (/[A-Z]/.test(val) && /[a-z]/.test(val))  score++;
+        if (/[0-9]/.test(val))                         score++;
+        if (/[^A-Za-z0-9]/.test(val))                 score++;
+        const bar    = document.getElementById('pwBar');
+        const widths = ['0%','25%','50%','75%','100%'];
+        const colors = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#27ae60'];
+        bar.style.width      = widths[score] || '0%';
+        bar.style.background = colors[score - 1] || 'transparent';
+    }
+
+    // ── Alert helper
+    function showAlert(id, msg) {
+        document.getElementById('errorAlert').style.display   = 'none';
+        document.getElementById('successAlert').style.display = 'none';
+        const el = document.getElementById(id);
+        el.textContent   = msg;
+        el.style.display = 'block';
+    }
+
+    // ── Register
+    async function registerUser() {
+        const name            = document.getElementById('name').value.trim();
+        const phone           = document.getElementById('phone').value.trim();
+        const email           = document.getElementById('email').value.trim();
+        const password        = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const role            = document.getElementById('selectedRole').value;
+        const licenseNumber   = document.getElementById('licenseNumber').value.trim();
+        const bankAccount     = document.getElementById('bankAccount').value.trim();
+        const businessName    = document.getElementById('businessName').value.trim();
+        const terms           = document.getElementById('terms').checked;
+
+        // ── Validation
+        if (!name || !phone || !email || !password)
+            return showAlert('errorAlert', 'Please fill in all required fields.');
+        if (password !== confirmPassword)
+            return showAlert('errorAlert', 'Passwords do not match.');
+        if (password.length < 6)
+            return showAlert('errorAlert', 'Password must be at least 6 characters.');
+        if (role === 'RIDER' && !licenseNumber)
+            return showAlert('errorAlert', 'Please enter your driving license number.');
+        if (role === 'OWNER' && !bankAccount)
+            return showAlert('errorAlert', 'Please enter your bank account number.');
+        if (!terms)
+            return showAlert('errorAlert', 'You must agree to the Terms of Service.');
+
+        // ── Try Spring Boot backend
+        try {
+            const res = await fetch('/users/register', {
+                method : 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body   : new URLSearchParams({ name, phone, email, password, role, licenseNumber, bankAccount, businessName })
+            });
+
+            if (res.ok) {
+                showAlert('successAlert', 'Account created successfully! Redirecting to login...');
+                setTimeout(() => window.location.href = '/users/login', 1800);
+                return;
+            } else {
+                const msg = await res.text();
+                showAlert('errorAlert', msg || 'Registration failed. Please try again.');
+                return;
+            }
+        } catch (err) {
+            // Backend not running — localStorage demo mode
+        }
+
+        // ── Demo fallback
+        const users = JSON.parse(localStorage.getItem('bp_users') || '[]');
+        if (users.find(u => u.email === email))
+            return showAlert('errorAlert', 'This email is already registered.');
+
+        const userId = 'U' + Date.now();
+        users.push({ userId, name, phone, email, password, role, licenseNumber, bankAccount, businessName });
+        localStorage.setItem('bp_users', JSON.stringify(users));
+
+        showAlert('successAlert', 'Account created! ID: ' + userId + '. Redirecting to login...');
+        setTimeout(() => window.location.href = '/users/login', 1800);
+    }
+</script>
+</body>
+</html>
