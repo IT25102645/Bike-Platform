@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Profile – Bike Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI', Arial, sans-serif; background:#0f0f23; min-height:100vh; display:flex; flex-direction:column; color:#fff; }
+
+        /* ══ Navbar ══ */
+        .navbar { background:#1a1a2e; padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:60px; position:sticky; top:0; z-index:100; box-shadow:0 2px 12px rgba(0,0,0,.4); }
+        .navbar-brand { color:#fff; font-size:20px; font-weight:500; text-decoration:none; display:flex; align-items:center; gap:8px; }
+        .navbar-brand i { color:#e94560; }
+        .nav-links { display:flex; gap:4px; }
+        .nav-link { color:rgba(255,255,255,0.7); text-decoration:none; padding:6px 14px; border-radius:8px; font-size:14px; transition:all .2s; }
+        .nav-link:hover,.nav-link.active { background:rgba(255,255,255,0.12); color:#fff; }
+
+        /* ══ Page layout ══ */
+        .page { flex:1; padding:2.5rem 2rem; max-width:1100px; margin:0 auto; width:100%; }
+
+        /* ══ Breadcrumb ══ */
+        .breadcrumb { display:flex; align-items:center; gap:8px; font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:1.8rem; }
+        .breadcrumb a { color:rgba(255,255,255,0.4); text-decoration:none; transition:color .2s; }
+        .breadcrumb a:hover { color:#e94560; }
+        .breadcrumb i { font-size:10px; }
+
+        /* ══ Profile hero banner ══ */
+        .profile-banner {
+            background:linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%);
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:16px;
+            padding:2rem 2.5rem;
+            display:flex;
+            align-items:center;
+            gap:2rem;
+            margin-bottom:1.5rem;
+            position:relative;
+            overflow:hidden;
+        }
+        .profile-banner::before {
+            content:'';
+            position:absolute; top:-40px; right:-40px;
+            width:200px; height:200px;
+            border-radius:50%;
+            background:rgba(233,69,96,.08);
+            pointer-events:none;
+        }
+
+        /* Avatar */
+        .avatar-wrap { position:relative; flex-shrink:0; }
+        .avatar {
+            width:90px; height:90px; border-radius:50%;
+            background:linear-gradient(135deg,#e94560,#c73652);
+            display:flex; align-items:center; justify-content:center;
+            font-size:2.2rem; font-weight:700; color:#fff;
+            border:3px solid rgba(233,69,96,.4);
+            box-shadow:0 0 24px rgba(233,69,96,.3);
+            user-select:none;
+        }
+        .avatar-edit {
+            position:absolute; bottom:0; right:0;
+            width:26px; height:26px; border-radius:50%;
+            background:#e94560; border:2px solid #0f0f23;
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer; font-size:10px; color:#fff;
+            transition:background .2s;
+        }
+        .avatar-edit:hover { background:#c73652; }
+
+        /* Banner info */
+        .banner-info { flex:1; }
+        .banner-info h1 { font-size:1.6rem; font-weight:600; color:#fff; margin-bottom:.3rem; }
+        .banner-info .email { font-size:.88rem; color:rgba(255,255,255,0.5); margin-bottom:.8rem; }
+        .banner-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+        .role-badge {
+            display:inline-flex; align-items:center; gap:6px;
+            padding:4px 14px; border-radius:999px; font-size:.76rem; font-weight:600;
+        }
+        .role-USER   { background:rgba(255,255,255,0.1);  color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.15); }
+        .role-RIDER  { background:rgba(52,152,219,.15);   color:#74b9ff; border:1px solid rgba(52,152,219,.3); }
+        .role-OWNER  { background:rgba(233,69,96,.15);    color:#ff8fa3; border:1px solid rgba(233,69,96,.3); }
+        .join-date { font-size:.78rem; color:rgba(255,255,255,0.35); }
+
+        /* Banner stats */
+        .banner-stats { display:flex; gap:1.5rem; flex-shrink:0; }
+        .bstat { text-align:center; }
+        .bstat-num { font-size:1.5rem; font-weight:600; color:#e94560; }
+        .bstat-lbl { font-size:.72rem; color:rgba(255,255,255,0.4); margin-top:2px; white-space:nowrap; }
+
+        /* ══ Main grid ══ */
+        .main-grid { display:grid; grid-template-columns:1fr 360px; gap:1.5rem; }
+        @media(max-width:800px){ .main-grid{ grid-template-columns:1fr; } }
+
+        /* ══ Cards ══ */
+        .card {
+            background:#16213e;
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:14px;
+            overflow:hidden;
+            margin-bottom:1.5rem;
+        }
+        .card-header {
+            padding:1rem 1.5rem;
+            border-bottom:1px solid rgba(255,255,255,0.06);
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .card-header h3 { font-size:.95rem; font-weight:600; color:#fff; display:flex; align-items:center; gap:8px; }
+        .card-header h3 i { color:#e94560; font-size:.9rem; }
+        .card-body { padding:1.5rem; }
+
+        /* ══ Form fields ══ */
+        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem 1.2rem; }
+        .form-group { display:flex; flex-direction:column; }
+        .form-group.full { grid-column:1/-1; }
+        .field-label {
+            font-size:.72rem; font-weight:600;
+            color:rgba(255,255,255,0.4); text-transform:uppercase;
+            letter-spacing:.6px; margin-bottom:.38rem;
+        }
+        .input-wrap { position:relative; display:flex; align-items:center; }
+        .input-wrap i.ico { position:absolute; left:12px; color:rgba(255,255,255,0.25); font-size:.85rem; pointer-events:none; }
+        .input-wrap input {
+            width:100%; padding:10px 38px;
+            background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09);
+            border-radius:8px; font-size:.9rem; color:#fff; font-family:inherit;
+            transition:border-color .2s, background .2s;
+        }
+        .input-wrap input::placeholder { color:rgba(255,255,255,0.18); }
+        .input-wrap input:focus { outline:none; border-color:#e94560; background:rgba(233,69,96,.06); }
+        .input-wrap input:disabled { opacity:.45; cursor:not-allowed; }
+        .toggle-pw { position:absolute; right:11px; background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.25); font-size:.84rem; padding:0; }
+        .toggle-pw:hover { color:#e94560; }
+
+        /* Read-only display fields */
+        .field-value {
+            padding:10px 13px;
+            background:rgba(255,255,255,0.03);
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:8px; font-size:.9rem;
+            color:rgba(255,255,255,0.7);
+        }
+
+        /* ══ Buttons ══ */
+        .btn {
+            display:inline-flex; align-items:center; gap:7px;
+            padding:9px 20px; border-radius:8px; font-size:.85rem;
+            font-weight:600; font-family:inherit; cursor:pointer; border:none;
+            transition:all .2s;
+        }
+        .btn-red    { background:#e94560; color:#fff; }
+        .btn-red:hover { background:#c73652; box-shadow:0 6px 20px rgba(233,69,96,.35); transform:translateY(-1px); }
+        .btn-ghost  { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.1); }
+        .btn-ghost:hover { background:rgba(255,255,255,0.1); color:#fff; }
+        .btn-danger { background:rgba(233,69,96,.12); color:#ff8fa3; border:1px solid rgba(233,69,96,.25); }
+        .btn-danger:hover { background:rgba(233,69,96,.22); }
+        .btn:active { transform:translateY(0) !important; }
+        .btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:1.2rem; }
+
+        /* ══ Alerts ══ */
+        .alert { padding:10px 14px; border-radius:8px; margin-bottom:1rem; font-size:.85rem; font-weight:500; display:none; }
+        .alert-error   { background:rgba(233,69,96,.15); color:#ff8fa3; border:1px solid rgba(233,69,96,.3); }
+        .alert-success { background:rgba(46,125,50,.18);  color:#81c784; border:1px solid rgba(46,125,50,.3); }
+
+        /* ══ Role-specific section ══ */
+        .role-section { display:none; }
+        .role-section.visible { display:block; }
+
+        /* ══ Stats sidebar ══ */
+        .stat-row { display:flex; align-items:center; justify-content:space-between; padding:.9rem 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .stat-row:last-child { border:none; }
+        .stat-row .s-label { font-size:.85rem; color:rgba(255,255,255,0.5); display:flex; align-items:center; gap:8px; }
+        .stat-row .s-label i { color:#e94560; width:14px; font-size:.8rem; }
+        .stat-row .s-val { font-size:.9rem; font-weight:600; color:#fff; }
+
+        /* ══ Activity list ══ */
+        .activity-item {
+            display:flex; align-items:flex-start; gap:12px;
+            padding:.9rem 0; border-bottom:1px solid rgba(255,255,255,0.05);
+        }
+        .activity-item:last-child { border:none; }
+        .act-icon {
+            width:34px; height:34px; border-radius:8px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center; font-size:.85rem;
+        }
+        .act-icon.rental  { background:rgba(52,152,219,.15); color:#74b9ff; }
+        .act-icon.ride    { background:rgba(46,213,115,.12); color:#5df0a0; }
+        .act-icon.payment { background:rgba(233,69,96,.12);  color:#ff8fa3; }
+        .act-icon.review  { background:rgba(253,203,110,.12);color:#fdd87e; }
+        .act-text { flex:1; }
+        .act-text .act-title { font-size:.87rem; color:rgba(255,255,255,0.8); margin-bottom:2px; }
+        .act-text .act-date  { font-size:.76rem; color:rgba(255,255,255,0.35); }
+        .act-amount { font-size:.87rem; font-weight:600; color:#e94560; }
+
+        /* ══ Password strength ══ */
+        .pw-strength { margin-top:.35rem; height:3px; border-radius:3px; background:rgba(255,255,255,0.08); }
+        .pw-bar { height:100%; width:0; border-radius:3px; transition:width .3s, background .3s; }
+
+        /* ══ Danger zone ══ */
+        .danger-zone { border-color:rgba(233,69,96,.25) !important; }
+        .danger-zone .card-header { border-bottom-color:rgba(233,69,96,.15) !important; }
+        .danger-zone .card-header h3 { color:#ff8fa3; }
+        .danger-text { font-size:.85rem; color:rgba(255,255,255,0.45); line-height:1.6; margin-bottom:1rem; }
+
+        /* ══ Not logged in ══ */
+        .not-logged { text-align:center; padding:4rem 2rem; }
+        .not-logged i { font-size:3rem; color:rgba(255,255,255,0.15); margin-bottom:1rem; display:block; }
+        .not-logged h2 { font-size:1.2rem; color:rgba(255,255,255,0.5); margin-bottom:.5rem; }
+        .not-logged p  { font-size:.88rem; color:rgba(255,255,255,0.3); margin-bottom:1.5rem; }
+
+        /* ══ Footer ══ */
+        footer { background:#1a1a2e; text-align:center; padding:1rem; font-size:.8rem; color:rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+
+<!-- ══ Navbar ══ -->
+<nav class="navbar">
+    <a class="navbar-brand" href="/">
+        <i class="fas fa-bicycle"></i> Bike Platform
+    </a>
+    <div class="nav-links">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link" href="#">Bikes</a>
+        <a class="nav-link" href="#">Rentals</a>
+        <a class="nav-link" href="#">Rides</a>
+        <a class="nav-link" href="#">Payments</a>
+        <a class="nav-link" href="#">Reviews</a>
+        <a class="nav-link active" href="profile.html">Profile</a>
+    </div>
+</nav>
+
+<!-- ══ Page ══ -->
+<div class="page">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="/">Home</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>My Profile</span>
+    </div>
+
+    <!-- ── Not logged in state ── -->
+    <div id="notLoggedIn" style="display:none;">
+        <div class="card">
+            <div class="not-logged">
+                <i class="fas fa-user-lock"></i>
+                <h2>You are not logged in</h2>
+                <p>Please log in to view and manage your profile.</p>
+                <a href="/users/login" class="btn btn-red"><i class="fas fa-sign-in-alt"></i> Go to Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Profile content (shown when logged in) ── -->
+    <div id="profileContent" style="display:none;">
+
+        <!-- Profile banner -->
+        <div class="profile-banner">
+            <div class="avatar-wrap">
+                <div class="avatar" id="avatarInitial">K</div>
+                <div class="avatar-edit" title="Change avatar"><i class="fas fa-camera"></i></div>
+            </div>
+            <div class="banner-info">
+                <h1 id="bannerName">Kamal Perera</h1>
+                <div class="email" id="bannerEmail">kamal@bike.lk</div>
+                <div class="banner-meta">
+                    <span class="role-badge" id="bannerRole">RIDER</span>
+                    <span class="join-date" id="bannerJoin"></span>
+                </div>
+            </div>
+            <div class="banner-stats" id="bannerStats">
+                <!-- filled by JS based on role -->
+            </div>
+        </div>
+
+        <!-- ══ Main grid ══ -->
+        <div class="main-grid">
+
+            <!-- ── LEFT COLUMN ── -->
+            <div>
+
+                <!-- Personal Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-user"></i> Personal Information</h3>
+                        <button class="btn btn-ghost" id="editToggleBtn" onclick="toggleEdit()" style="padding:6px 14px; font-size:.8rem;">
+                            <i class="fas fa-pen"></i> Edit
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-error"   id="infoError"></div>
+                        <div class="alert alert-success" id="infoSuccess"></div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <div class="field-label">Full Name</div>
+                                <div class="input-wrap">
+                                    <i class="fas fa-user ico"></i>
+                                    <input type="text" id="fieldName" disabled/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="field-label">Phone Number</div>
+                                <div class="input-wrap">
+                                    <i class="fas fa-phone ico"></i>
+                                    <input type="tel" id="fieldPhone" disabled/>
+                                </div>
+                            </div>
+                            <div class="form-group full">
+                                <div class="field-label">Email Address</div>
+                                <div class="input-wrap">
+                                    <i class="fas fa-envelope ico"></i>
+                                    <input type="email" id="fieldEmail" disabled/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="field-label">Role</div>
+                                <div class="field-value" id="fieldRole">—</div>
+                            </div>
+                            <div class="form-group">
+                                <div class="field-label">User ID</div>
+                                <div class="field-value" id="fieldUserId">—</div>
+                            </div>
+                        </div>
+
+                        <div class="btn-row" id="editActions" style="display:none;">
+                            <button class="btn btn-red" onclick="saveProfile()">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <button class="btn btn-ghost" onclick="cancelEdit()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Change Password -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-lock"></i> Change Password</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-error"   id="pwError"></div>
+                        <div class="alert alert-success" id="pwSuccess"></div>
+
+                        <div class="form-grid">
+                            <div class="form-group full">
+                                <div class="field-label">Current Password</div>
+                                <div class="input-wrap">
+                                    <i class="fas fa-lock ico"></i>
+                                    <input type="password" id="currentPw" placeholder="Enter current password"/>
+                                    <button class="toggle-pw" onclick="togglePw('currentPw',this)"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="field-label">New Password</div>
+                                <div class="input-wrap">
+                                    <i class="fas fa-lock ico"></i>
+                                    <input type="password" id="newPw" placeholder="Min 6 characters" oninput="checkStrength(this.value)"/>
+                                    <button class="toggle-pw" onclick="togglePw('newPw',this)"><i class="fas fa-eye"></i></button>
+                                </div>
+                                <div class="pw-strength"><div class="pw-bar" id="pwBar"></div></div>
+                            </div>
+                            <div class="form-group">
+                                <div class="field-label">Confirm New Password</div>
+                                <div class="input-wrap">
+                                    <i class="fas fa-lock ico"></i>
+                                    <input type="password" id="confirmPw" placeholder="Repeat new password"/>
+                                    <button class="toggle-pw" onclick="togglePw('confirmPw',this)"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-row">
+                            <button class="btn btn-red" onclick="changePassword()">
+                                <i class="fas fa-key"></i> Update Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── RIDER section ── -->
+                <div class="card role-section" id="riderSection">
+                    <div class="card-header">
+                        <h3><i class="fas fa-biking"></i> Rider Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-error"   id="riderError"></div>
+                        <div class="alert alert-success" id="riderSuccess"></div>
+                        <div class="form-grid">
+                            <div class="form-group full">
+                                <div class="field-label">Driving License Number</div>
+                                <div class="input-wrap">
+                                    <i class="fas fa-id-card ico"></i>
+                                    <input type="text" id="fieldLicense" placeholder="e.g. B1234567"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-row">
+                            <button class="btn btn-red" onclick="updateLicense()">
+                                <i class="fas fa-save"></i> Update License
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── OWNER section ── -->
+                <div class="card role-section" id="ownerSection">
+                    <div class="card-header">
+                        <h3><i class="fas fa-key"></i> Owner Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-error"   id="ownerError"></div>
+                        <div class="alert alert-success" id="ownerSuccess"></div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <div class="field-label">Business Name</div>
+                                <div class="input-wrap">
+                                    <i class="fas fa-store ico"></i>
+                                    <input type="text" id="fieldBusiness" placeholder="e.g. Nimal Rentals"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="field-label">Bank Account Number</div>
+                                <div class="input-wrap">
+                                    <i class="fas fa-university ico"></i>
+                                    <input type="text" id="fieldBank" placeholder="e.g. 123456789"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-row">
+                            <button class="btn btn-red" onclick="updateOwnerDetails()">
+                                <i class="fas fa-save"></i> Update Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danger zone -->
+                <div class="card danger-zone">
+                    <div class="card-header">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="danger-text">
+                            Deleting your account is permanent and cannot be undone.
+                            All your rentals, rides, and payment history will be removed.
+                        </p>
+                        <button class="btn btn-danger" onclick="confirmDelete()">
+                            <i class="fas fa-trash-alt"></i> Delete My Account
+                        </button>
+                    </div>
+                </div>
+
+            </div><!-- /left column -->
+
+            <!-- ── RIGHT COLUMN ── -->
+            <div>
+
+                <!-- Account Stats -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-bar"></i> Account Stats</h3>
+                    </div>
+                    <div class="card-body" style="padding:1rem 1.5rem;">
+                        <div id="statsBody">
+                            <!-- filled by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                    </div>
+                    <div class="card-body" style="padding:.5rem 1.5rem;">
+                        <div id="activityBody">
+                            <!-- filled by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick links -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    </div>
+                    <div class="card-body" style="display:flex; flex-direction:column; gap:8px;">
+                        <a href="#" class="btn btn-ghost" style="justify-content:flex-start;">
+                            <i class="fas fa-bicycle" style="color:#e94560;width:16px"></i> Browse Bikes
+                        </a>
+                        <a href="#" class="btn btn-ghost" style="justify-content:flex-start;">
+                            <i class="fas fa-file-invoice" style="color:#e94560;width:16px"></i> My Rentals
+                        </a>
+                        <a href="#" class="btn btn-ghost" style="justify-content:flex-start;">
+                            <i class="fas fa-route" style="color:#e94560;width:16px"></i> My Rides
+                        </a>
+                        <a href="#" class="btn btn-ghost" style="justify-content:flex-start;">
+                            <i class="fas fa-credit-card" style="color:#e94560;width:16px"></i> Payment History
+                        </a>
+                        <button class="btn btn-ghost" style="justify-content:flex-start;" onclick="logout()">
+                            <i class="fas fa-sign-out-alt" style="color:#e94560;width:16px"></i> Logout
+                        </button>
+                    </div>
+                </div>
+
+            </div><!-- /right column -->
+        </div><!-- /main-grid -->
+    </div><!-- /profileContent -->
+</div><!-- /page -->
+
+<footer>&copy; 2026 Bike Platform. All rights reserved.</footer>
+
+<script>
+    let currentUser = null;
+    let editMode    = false;
+
+    // ══ On load ══════════════════════════════════════════════════════
+    window.addEventListener('DOMContentLoaded', () => {
+        const stored = localStorage.getItem('loggedInUser');
+        if (!stored) {
+            document.getElementById('notLoggedIn').style.display  = 'block';
+            document.getElementById('profileContent').style.display = 'none';
+            return;
+        }
+        currentUser = JSON.parse(stored);
+        document.getElementById('notLoggedIn').style.display    = 'none';
+        document.getElementById('profileContent').style.display = 'block';
+        populateProfile(currentUser);
+    });
+
+    // ══ Populate all profile data ══════════════════════════════════
+    function populateProfile(u) {
+        // Banner
+        document.getElementById('avatarInitial').textContent = u.name ? u.name.charAt(0).toUpperCase() : '?';
+        document.getElementById('bannerName').textContent    = u.name  || '—';
+        document.getElementById('bannerEmail').textContent   = u.email || '—';
+        document.getElementById('bannerJoin').textContent    = 'Member since 2026';
+
+        // Role badge
+        const roleEl = document.getElementById('bannerRole');
+        roleEl.textContent = u.role || 'USER';
+        roleEl.className   = 'role-badge role-' + (u.role || 'USER');
+
+        // Form fields
+        document.getElementById('fieldName').value   = u.name    || '';
+        document.getElementById('fieldPhone').value  = u.phone   || '';
+        document.getElementById('fieldEmail').value  = u.email   || '';
+        document.getElementById('fieldRole').textContent   = u.role   || 'USER';
+        document.getElementById('fieldUserId').textContent = u.userId || '—';
+
+        // Banner stats + sidebar stats based on role
+        buildStats(u);
+
+        // Role-specific sections
+        if (u.role === 'RIDER') {
+            document.getElementById('riderSection').classList.add('visible');
+            document.getElementById('fieldLicense').value = u.licenseNumber || '';
+            document.getElementById('bannerStats').innerHTML = `
+        <div class="bstat"><div class="bstat-num">${u.totalRides || 0}</div><div class="bstat-lbl">Total Rides</div></div>
+      `;
+        } else if (u.role === 'OWNER') {
+            document.getElementById('ownerSection').classList.add('visible');
+            document.getElementById('fieldBusiness').value = u.businessName  || '';
+            document.getElementById('fieldBank').value     = u.bankAccount   || '';
+            document.getElementById('bannerStats').innerHTML = `
+        <div class="bstat"><div class="bstat-num">${u.totalBikesListed || 0}</div><div class="bstat-lbl">Bikes Listed</div></div>
+      `;
+        }
+
+        buildActivity();
+    }
+
+    // ══ Build sidebar stats ════════════════════════════════════════
+    function buildStats(u) {
+        const role  = u.role || 'USER';
+        let rows = `
+      <div class="stat-row">
+        <span class="s-label"><i class="fas fa-id-badge"></i> User ID</span>
+        <span class="s-val">${u.userId || '—'}</span>
+      </div>
+      <div class="stat-row">
+        <span class="s-label"><i class="fas fa-user-tag"></i> Role</span>
+        <span class="s-val">${role}</span>
+      </div>
+      <div class="stat-row">
+        <span class="s-label"><i class="fas fa-phone"></i> Phone</span>
+        <span class="s-val">${u.phone || '—'}</span>
+      </div>`;
+
+        if (role === 'RIDER') {
+            rows += `
+      <div class="stat-row">
+        <span class="s-label"><i class="fas fa-id-card"></i> License</span>
+        <span class="s-val">${u.licenseNumber || '—'}</span>
+      </div>
+      <div class="stat-row">
+        <span class="s-label"><i class="fas fa-bicycle"></i> Total Rides</span>
+        <span class="s-val">${u.totalRides || 0}</span>
+      </div>`;
+        } else if (role === 'OWNER') {
+            rows += `
+      <div class="stat-row">
+        <span class="s-label"><i class="fas fa-store"></i> Business</span>
+        <span class="s-val">${u.businessName || '—'}</span>
+      </div>
+      <div class="stat-row">
+        <span class="s-label"><i class="fas fa-bicycle"></i> Bikes Listed</span>
+        <span class="s-val">${u.totalBikesListed || 0}</span>
+      </div>
+      <div class="stat-row">
+        <span class="s-label"><i class="fas fa-university"></i> Bank Acc.</span>
+        <span class="s-val">${u.bankAccount ? '••••' + u.bankAccount.slice(-4) : '—'}</span>
+      </div>`;
+        }
+
+        document.getElementById('statsBody').innerHTML = rows;
+    }
+
+    // ══ Build recent activity (demo data) ════════════════════════
+    function buildActivity() {
+        const activities = [
+            { icon:'rental',  fa:'fa-bicycle',       title:'Rented Trek Mountain Pro',   date:'Today, 10:30 AM',    amount:'LKR 750' },
+            { icon:'payment', fa:'fa-credit-card',   title:'Payment completed',          date:'Yesterday, 3:00 PM', amount:'LKR 750' },
+            { icon:'ride',    fa:'fa-route',         title:'Shared ride to Peradeniya',  date:'Jan 13, 2:00 PM',   amount:'LKR 150' },
+            { icon:'review',  fa:'fa-star',          title:'Reviewed Giant E-Bike X1',   date:'Jan 12, 9:00 AM',   amount:'★ 4/5'   },
+        ];
+        document.getElementById('activityBody').innerHTML = activities.map(a => `
+      <div class="activity-item">
+        <div class="act-icon ${a.icon}"><i class="fas ${a.fa}"></i></div>
+        <div class="act-text">
+          <div class="act-title">${a.title}</div>
+          <div class="act-date">${a.date}</div>
+        </div>
+        <div class="act-amount">${a.amount}</div>
+      </div>
+    `).join('');
+    }
+
+    // ══ Toggle edit mode ══════════════════════════════════════════
+    function toggleEdit() {
+        editMode = !editMode;
+        const fields = ['fieldName','fieldPhone'];
+        fields.forEach(id => document.getElementById(id).disabled = !editMode);
+        document.getElementById('editActions').style.display  = editMode ? 'flex' : 'none';
+        const btn = document.getElementById('editToggleBtn');
+        btn.innerHTML = editMode
+            ? '<i class="fas fa-times"></i> Cancel'
+            : '<i class="fas fa-pen"></i> Edit';
+    }
+
+    function cancelEdit() {
+        editMode = false;
+        populateProfile(currentUser);
+        document.getElementById('fieldName').disabled  = true;
+        document.getElementById('fieldPhone').disabled = true;
+        document.getElementById('editActions').style.display = 'none';
+        document.getElementById('editToggleBtn').innerHTML = '<i class="fas fa-pen"></i> Edit';
+    }
+
+    // ══ Save profile ══════════════════════════════════════════════
+    async function saveProfile() {
+        const name  = document.getElementById('fieldName').value.trim();
+        const phone = document.getElementById('fieldPhone').value.trim();
+
+        if (!name || !phone) return showAlert('infoError','Name and phone cannot be empty.');
+
+        // Try Spring Boot
+        try {
+            const res = await fetch(`/users/update/${currentUser.userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ phone })
+            });
+            if (res.ok) {
+                currentUser.name  = name;
+                currentUser.phone = phone;
+                localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+                populateProfile(currentUser);
+                cancelEdit();
+                return showAlert('infoSuccess','Profile updated successfully.');
+            }
+        } catch (e) { /* demo fallback */ }
+
+        // Demo fallback
+        currentUser.name  = name;
+        currentUser.phone = phone;
+        updateLocalStorage(currentUser);
+        populateProfile(currentUser);
+        cancelEdit();
+        showAlert('infoSuccess','Profile updated successfully.');
+    }
+
+    // ══ Change password ═══════════════════════════════════════════
+    async function changePassword() {
+        const current = document.getElementById('currentPw').value;
+        const newPw   = document.getElementById('newPw').value;
+        const confirm = document.getElementById('confirmPw').value;
+
+        if (!current || !newPw || !confirm) return showAlert('pwError','Please fill in all password fields.');
+        if (current !== currentUser.password)  return showAlert('pwError','Current password is incorrect.');
+        if (newPw.length < 6)                  return showAlert('pwError','New password must be at least 6 characters.');
+        if (newPw !== confirm)                 return showAlert('pwError','New passwords do not match.');
+
+        // Try Spring Boot
+        try {
+            const res = await fetch(`/users/update/${currentUser.userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ password: newPw })
+            });
+            if (res.ok) {
+                currentUser.password = newPw;
+                localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+                clearPwFields();
+                return showAlert('pwSuccess','Password updated successfully.');
+            }
+        } catch (e) { /* demo fallback */ }
+
+        // Demo fallback
+        currentUser.password = newPw;
+        updateLocalStorage(currentUser);
+        clearPwFields();
+        showAlert('pwSuccess','Password updated successfully.');
+    }
+
+    function clearPwFields() {
+        ['currentPw','newPw','confirmPw'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('pwBar').style.width = '0';
+    }
+
+    // ══ Update license (Rider) ════════════════════════════════════
+    async function updateLicense() {
+        const license = document.getElementById('fieldLicense').value.trim();
+        if (!license) return showAlert('riderError','Please enter a license number.');
+
+        try {
+            const res = await fetch(`/users/update/license/${currentUser.userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ licenseNumber: license })
+            });
+            if (res.ok) {
+                currentUser.licenseNumber = license;
+                updateLocalStorage(currentUser);
+                return showAlert('riderSuccess','License number updated.');
+            }
+        } catch (e) { /* demo */ }
+
+        currentUser.licenseNumber = license;
+        updateLocalStorage(currentUser);
+        buildStats(currentUser);
+        showAlert('riderSuccess','License number updated.');
+    }
+
+    // ══ Update owner details ══════════════════════════════════════
+    async function updateOwnerDetails() {
+        const business = document.getElementById('fieldBusiness').value.trim();
+        const bank     = document.getElementById('fieldBank').value.trim();
+        if (!bank) return showAlert('ownerError','Bank account number is required.');
+
+        try {
+            const res = await fetch(`/users/update/bank/${currentUser.userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ bankAccount: bank, businessName: business })
+            });
+            if (res.ok) {
+                currentUser.bankAccount   = bank;
+                currentUser.businessName  = business;
+                updateLocalStorage(currentUser);
+                buildStats(currentUser);
+                return showAlert('ownerSuccess','Owner details updated.');
+            }
+        } catch (e) { /* demo */ }
+
+        currentUser.bankAccount  = bank;
+        currentUser.businessName = business;
+        updateLocalStorage(currentUser);
+        buildStats(currentUser);
+        showAlert('ownerSuccess','Owner details updated.');
+    }
+
+    // ══ Delete account ════════════════════════════════════════════
+    async function confirmDelete() {
+        if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
+
+        try {
+            const res = await fetch(`/users/delete/${currentUser.userId}`, { method: 'POST' });
+            if (res.ok) { logout(); return; }
+        } catch (e) { /* demo */ }
+
+        // Demo: remove from bp_users
+        const users = JSON.parse(localStorage.getItem('bp_users') || '[]')
+            .filter(u => u.userId !== currentUser.userId);
+        localStorage.setItem('bp_users', JSON.stringify(users));
+        logout();
+    }
+
+    // ══ Logout ════════════════════════════════════════════════════
+    function logout() {
+        localStorage.removeItem('loggedInUser');
+        window.location.href = '/users/login';
+    }
+
+    // ══ Helpers ═══════════════════════════════════════════════════
+    function showAlert(id, msg) {
+        // Hide all alerts in same card
+        const el = document.getElementById(id);
+        el.textContent   = msg;
+        el.style.display = 'block';
+        setTimeout(() => el.style.display = 'none', 4000);
+    }
+
+    function togglePw(id, btn) {
+        const inp  = document.getElementById(id);
+        const icon = btn.querySelector('i');
+        const show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        icon.classList.toggle('fa-eye',       !show);
+        icon.classList.toggle('fa-eye-slash',  show);
+    }
+
+    function checkStrength(val) {
+        let s = 0;
+        if (val.length >= 6)                          s++;
+        if (val.length >= 10)                         s++;
+        if (/[A-Z]/.test(val) && /[a-z]/.test(val)) s++;
+        if (/[0-9]/.test(val))                        s++;
+        if (/[^A-Za-z0-9]/.test(val))                s++;
+        const bar = document.getElementById('pwBar');
+        bar.style.width      = ['0%','25%','50%','75%','100%'][s] || '0%';
+        bar.style.background = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#27ae60'][s-1] || 'transparent';
+    }
+
+    function updateLocalStorage(user) {
+        localStorage.setItem('loggedInUser', JSON.stringify(user));
+        const users = JSON.parse(localStorage.getItem('bp_users') || '[]');
+        const idx   = users.findIndex(u => u.userId === user.userId);
+        if (idx !== -1) { users[idx] = user; localStorage.setItem('bp_users', JSON.stringify(users)); }
+    }
+</script>
+</body>
+</html>
