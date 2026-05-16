@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/payment")
+@RequestMapping("/payments")
 public class PaymentController {
 
     @Autowired
@@ -92,13 +92,13 @@ public class PaymentController {
             @PathVariable String paymentId,
             @RequestParam String status) {
         paymentService.updatePaymentStatus(paymentId, status);
-        return "redirect:/payment/history";
+        return "redirect:/payments/history";
     }
 
     // DELETE - Payment
     @PostMapping("/delete/{paymentId}")
     public String deletePayment(@PathVariable String paymentId) {
         paymentService.deletePayment(paymentId);
-        return "redirect:/payment/history";
+        return "redirect:/payments/history";
     }
 }

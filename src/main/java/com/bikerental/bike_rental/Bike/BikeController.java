@@ -19,7 +19,7 @@ public class BikeController {
     public String listBikes(Model model) {
         model.addAttribute("bikes", bikeService.getAllBikes());
         model.addAttribute("pageTitle", "All Bikes");
-        return "bike/bike-list";
+        return "Bike/bike-list";
     }
 
     // Show only available bikes
@@ -27,7 +27,7 @@ public class BikeController {
     public String availableBikes(Model model) {
         model.addAttribute("bikes", bikeService.getAvailableBikes());
         model.addAttribute("pageTitle", "Available Bikes");
-        return "bike/bike-list";
+        return "Bike/bike-list";
     }
 
     //  READ - Search Bikes Page
@@ -40,13 +40,13 @@ public class BikeController {
             model.addAttribute("bikes", bikeService.searchBikes(keyword));
             model.addAttribute("keyword", keyword);
         }
-        return "bike/bike-search";
+        return "Bike/bike-search";
     }
 
     //  CREATE - Show Add Bike Form
     @GetMapping("/add")
     public String showAddBikeForm() {
-        return "bike/add-bike";
+        return "Bike/add-bike";
     }
 
     //  CREATE - Handle Add Bike Form Submission
@@ -113,7 +113,7 @@ public class BikeController {
             }
 
             model.addAttribute("bike", bike);
-            return "bike/edit-bike";
+            return "Bike/edit-bike";
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
