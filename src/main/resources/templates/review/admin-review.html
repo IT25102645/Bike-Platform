@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Admin - Review Management</title>
+    <style>
+        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0;
+            background: #fff; border-bottom: 1px solid #ddd; }
+        .stat { text-align: center; padding: 20px 16px; border-right: 1px solid #eee; }
+        .stat:last-child { border-right: none; }
+        .stat-num { font-size: 26px; font-weight: bold; color: #0057b8; }
+        .stat-lbl { font-size: 12px; color: #777; margin-top: 4px;
+            text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .section { padding: 24px; }
+        .section h2 { font-size: 15px; font-family: Georgia, serif; margin-bottom: 16px;
+            color: #2c2c2c; padding-bottom: 8px; border-bottom: 1px solid #ddd; }
+
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; background: #fff;
+            border: 1px solid #ddd; font-size: 13px; }
+        thead { background: #f4f4f4; }
+        th { padding: 10px 12px; text-align: left; font-size: 12px;
+            text-transform: uppercase; color: #555; border-bottom: 1px solid #ddd;
+            white-space: nowrap; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafafa; }
+
+        .stars { color: #f39c12; }
+        .stars .empty { color: #ddd; }
+
+        .badge-bike { background: #d4edda; color: #155724; font-size: 11px;
+            padding: 3px 8px; border-radius: 3px; }
+        .badge-ride { background: #d1ecf1; color: #0c5460; font-size: 11px;
+            padding: 3px 8px; border-radius: 3px; }
+
+        .comment-cell { max-width: 200px; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis; color: #666; }
+
+        .actions { display: flex; gap: 6px; }
+        .btn-edit   { background: #0057b8; color: white; border: none; padding: 4px 12px;
+            font-size: 12px; border-radius: 3px; cursor: pointer; text-decoration: none; }
+        .btn-delete { background: #dc3545; color: white; border: none; padding: 4px 12px;
+            font-size: 12px; border-radius: 3px; cursor: pointer; }
+        .btn-edit:hover   { background: #004494; color: white; }
+        .btn-delete:hover { background: #c82333; }
+
+        .empty-row td { text-align: center; padding: 30px; color: #aaa; }
+
+        .alert { padding: 10px 14px; border-radius: 3px; margin-bottom: 16px; font-size: 13px; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-num" th:text="${reviews.size()}">0</div>
+            <div class="stat-lbl">Total Reviews</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num" th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">0.0</div>
+            <div class="stat-lbl">Average Rating</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Review Management</h2>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}"   class="alert alert-error"   th:text="${errorMessage}"></div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>User</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(reviews)}" class="empty-row">
+                        <td colspan="7">No reviews found.</td>
+                    </tr>
+                    <!-- review[0]=id, [1]=type, [2]=userId, [3]=username,
+                         [4]=rating, [5]=comment, [6]=date -->
+                    <tr th:each="review : ${reviews}">
+                        <td th:text="${review[0]}"></td>
+                        <td>
+                            <span th:classappend="${review[1] == 'BIKE'} ? 'badge-bike' : 'badge-ride'"
+                                  th:text="${review[1]}"></span>
+                        </td>
+                        <td th:text="${review[3]}"></td>
+                        <td>
+                            <span class="stars">
+                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                    <span th:classappend="${i <= #numbers.formatInteger(review[4], 1)} ? '' : 'empty'">&#9733;</span>
+                                </th:block>
+                            </span>
+                        </td>
+                        <td class="comment-cell" th:text="${review[5]}"></td>
+                        <td th:text="${review[6]}"></td>
+                        <td>
+                            <div class="actions">
+                                <a th:href="@{/reviews/edit/{id}(id=${review[0]})}" class="btn-edit">Edit</a>
+                                <form th:action="@{/reviews/delete/{id}(id=${review[0]})}" method="post"
+                                      onsubmit="return confirm('Delete this review?')">
+                                    <button type="submit" class="btn-delete">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
