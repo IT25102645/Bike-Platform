@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Bike Platform</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .edit-container {
+            max-width: 600px;
+            margin: 4rem auto;
+        }
+
+        .card-header {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .card-header h1 {
+            font-size: 1.25rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .alert-error {
+            background-color: #ffe5e5;
+            color: var(--danger-color);
+            border: 1px solid #ffcccc;
+        }
+
+        .alert-success {
+            background-color: #e5f9e5;
+            color: var(--success-color);
+            border: 1px solid #ccffcc;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 2rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-label::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="navbar-brand" href="/">Bike Rental Platform</a>
+    <div class="nav-links">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link" th:if="${user != null}" th:href="@{'/users/profile/' + ${user.userId}}">View Profile</a>
+    </div>
+</nav>
+
+<div class="container edit-container">
+    <div class="card" style="padding: 0; border: none;">
+        <div class="card-header">
+            <i class="fas fa-user-edit"></i>
+            <h1>Edit Profile</h1>
+        </div>
+        
+        <div style="padding: 2rem;">
+            <!-- Alerts -->
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+            <form th:action="@{'/users/update/' + ${user.userId}}" method="POST">
+                <div class="form-group">
+                    <label>USER ID (READ-ONLY)</label>
+                    <input type="text" th:value="${user.userId}" class="form-control" disabled style="background-color: #f9f9f9; cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label>EMAIL ADDRESS (READ-ONLY)</label>
+                    <input type="email" th:value="${user.email}" class="form-control" disabled style="background-color: #f9f9f9; cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">PHONE NUMBER</label>
+                    <input type="tel" id="phone" name="phone" th:value="${user.phone}" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">NEW PASSWORD (LEAVE BLANK TO KEEP CURRENT)</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; margin-top: 1rem;">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+
+            <!-- Rider Specific Updates -->
+            <div th:if="${user.role == 'RIDER'}">
+                <div class="section-label">Rider Information</div>
+                <form th:action="@{'/users/update/license/' + ${user.userId}}" method="POST">
+                    <div class="form-group">
+                        <label for="licenseNumber">DRIVING LICENSE NUMBER</label>
+                        <input type="text" id="licenseNumber" name="licenseNumber" th:value="${user.licenseNumber}" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-outline" style="width: 100%; border-color: var(--primary-color); color: var(--primary-color);">
+                        Update License
+                    </button>
+                </form>
+            </div>
+
+            <!-- Owner Specific Updates -->
+            <div th:if="${user.role == 'OWNER'}">
+                <div class="section-label">Business Information</div>
+                <form th:action="@{'/users/update/bank/' + ${user.userId}}" method="POST">
+                    <div class="form-group">
+                        <label for="bankAccount">BANK ACCOUNT NUMBER</label>
+                        <input type="text" id="bankAccount" name="bankAccount" th:value="${user.bankAccount}" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-outline" style="width: 100%; border-color: var(--primary-color); color: var(--primary-color);">
+                        Update Bank Info
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 2rem;">
+        <a th:href="@{'/users/profile/' + ${user.userId}}" style="color: var(--text-muted); text-decoration: none; font-weight: 600;">
+            ← Cancel and Return to Profile
+        </a>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2026 Bike Rental Platform. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

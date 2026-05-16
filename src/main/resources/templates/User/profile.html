@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Bike Platform</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 3rem auto;
+        }
+
+        .profile-header-card {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .profile-basic-info h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .profile-basic-info p {
+            opacity: 0.7;
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 0.3rem 1rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #aff;
+        }
+
+        .section-header {
+            background-color: #f2f2f2;
+            padding: 0.8rem 1.5rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .details-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+
+        .details-table td:first-child {
+            width: 30%;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .details-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="navbar-brand" href="/">Bike Rental Platform</a>
+    <div class="nav-links">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link" href="/bikes">Bikes</a>
+        <a class="nav-link active" th:if="${user != null}" th:href="@{'/users/profile/' + ${user.userId}}">My Profile</a>
+    </div>
+</nav>
+
+<div class="container profile-container">
+    <div th:if="${user != null}">
+        <!-- Profile Header Card -->
+        <div class="profile-header-card">
+            <div class="profile-avatar" th:text="${#strings.substring(user.name, 0, 1).toUpperCase()}">R</div>
+            <div class="profile-basic-info">
+                <h1 th:text="${user.name}">Ruvini</h1>
+                <p th:text="${user.email}">ruvini@gmail.com</p>
+                <span class="role-badge" th:text="${user.role}">RIDER</span>
+            </div>
+        </div>
+
+        <!-- Account Details -->
+        <div class="section-header">Account Details</div>
+        <table class="details-table">
+            <tr>
+                <td>USER ID</td>
+                <td th:text="${user.userId}">U1778943414138</td>
+            </tr>
+            <tr>
+                <td>FULL NAME</td>
+                <td th:text="${user.name}">Ruvini</td>
+            </tr>
+            <tr>
+                <td>EMAIL</td>
+                <td th:text="${user.email}">ruvini@gmail.com</td>
+            </tr>
+            <tr>
+                <td>PHONE</td>
+                <td th:text="${user.phone}">0712345678</td>
+            </tr>
+        </table>
+
+        <!-- Rider Details (Dynamic) -->
+        <div th:if="${user.role == 'RIDER'}">
+            <div class="section-header">Rider Details</div>
+            <table class="details-table">
+                <tr>
+                    <td>LICENSE NUMBER</td>
+                    <td th:text="${user.licenseNumber}">12345678</td>
+                </tr>
+                <tr>
+                    <td>TOTAL RIDES</td>
+                    <td th:text="${user.totalRides}">0</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Owner Details (Dynamic) -->
+        <div th:if="${user.role == 'OWNER'}">
+            <div class="section-header">Owner Details</div>
+            <table class="details-table">
+                <tr>
+                    <td>BUSINESS NAME</td>
+                    <td th:text="${user.businessName}">N/A</td>
+                </tr>
+                <tr>
+                    <td>BANK ACCOUNT</td>
+                    <td th:text="${user.bankAccount}">N/A</td>
+                </tr>
+                <tr>
+                    <td>TOTAL BIKES</td>
+                    <td th:text="${user.totalBikesListed}">0</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <a th:href="@{'/users/edit/' + ${user.userId}}" class="btn btn-outline" style="border-color: #007bff; color: #007bff;">Edit Profile</a>
+            <a href="/users/list" class="btn btn-gray" style="padding: 0.75rem 2rem;">← Back to List</a>
+            <form th:action="@{'/users/delete/' + ${user.userId}}" method="POST" style="margin-left: auto;">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this account?')">Delete Account</button>
+            </form>
+        </div>
+    </div>
+
+    <div th:unless="${user != null}" style="text-align: center; padding: 4rem;">
+        <h2 style="color: var(--danger-color);">User Not Found</h2>
+        <p>The requested user profile does not exist.</p>
+        <a href="/" class="btn btn-primary" style="margin-top: 1rem;">Go to Home</a>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2026 Bike Rental Platform. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

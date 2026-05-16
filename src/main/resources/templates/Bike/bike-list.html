@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Bikes - Bike Platform</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .bike-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bike-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .bike-img-container {
+            position: relative;
+            height: 200px;
+        }
+
+        .bike-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .availability-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .available { background: #e6fcf5; color: #0ca678; }
+        .unavailable { background: #fff5f5; color: #f03e3e; }
+
+        .bike-content {
+            padding: 1.5rem;
+            flex: 1;
+        }
+
+        .bike-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+
+        .bike-price span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .bike-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .bike-specs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .bike-specs i {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="navbar-brand" href="/">Bike Rental Platform</a>
+    <div class="nav-links">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link active" href="/bikes">Bikes</a>
+        <a class="nav-link" href="/users/login"><i class="fas fa-user-circle"></i> Login</a>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="page-header">
+        <h1>Available Bikes</h1>
+        <a href="/bikes/add" class="btn btn-primary"><i class="fas fa-plus"></i> List Your Bike</a>
+    </div>
+
+    <div class="filters">
+        <input type="text" class="form-control" placeholder="Search by model or brand..." style="flex: 1;">
+        <select class="form-control" style="width: 200px;">
+            <option>All Types</option>
+            <option>Electric</option>
+            <option>Manual</option>
+        </select>
+        <button class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+    </div>
+
+    <div class="bike-grid">
+        <div th:each="bike : ${bikes}" class="bike-card">
+            <div class="bike-img-container">
+                <img th:src="${bike.type == 'ELECTRIC' ? 'https://images.unsplash.com/photo-1593764592116-bfb2a97c642a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' : 'https://images.unsplash.com/photo-1532298229144-0ee0b6659d31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}" class="bike-img" alt="Bike Image">
+                <span class="availability-badge" th:classappend="${bike.available ? 'available' : 'unavailable'}" th:text="${bike.available ? 'AVAILABLE' : 'RENTED'}">AVAILABLE</span>
+            </div>
+            <div class="bike-content">
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;" th:text="${bike.brand}">GIANT</div>
+                <h3 th:text="${bike.model}">Trance Pro 2024</h3>
+                
+                <div class="bike-price">Rs. <span th:text="${bike.pricePerHour}">500</span><span>/hr</span></div>
+                
+                <div class="bike-specs">
+                    <span th:if="${bike.type == 'ELECTRIC'}"><i class="fas fa-bolt"></i> <span th:text="${bike.batteryRangeKm}">60</span>km Range</span>
+                    <span th:if="${bike.type == 'MANUAL'}"><i class="fas fa-cog"></i> <span th:text="${bike.gearCount}">21</span> Gears</span>
+                </div>
+
+                <p th:text="${bike.description}">High performance bike for all terrains.</p>
+                
+                <div style="display: flex; gap: 0.5rem; margin-top: auto;">
+                    <a th:href="@{'/rentals/rent/' + ${bike.bikeId}}" class="btn btn-primary" style="flex: 1; text-align: center;" th:if="${bike.available}">Rent Now</a>
+                    <button class="btn btn-gray" style="flex: 1;" disabled th:unless="${bike.available}">Unavailable</button>
+                    <a th:href="@{'/bikes/edit/' + ${bike.bikeId}}" class="btn btn-outline" style="border-color: #eee; color: #333;"><i class="fas fa-edit"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2026 Bike Rental Platform. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

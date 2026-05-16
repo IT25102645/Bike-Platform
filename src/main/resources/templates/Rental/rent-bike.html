@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent a Bike - Bike Platform</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .rent-container {
+            max-width: 600px;
+            margin: 4rem auto;
+        }
+
+        .bike-preview {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .bike-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="navbar-brand" href="/">Bike Rental Platform</a>
+    <div class="nav-links">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link" href="/bikes">Back to Bikes</a>
+    </div>
+</nav>
+
+<div class="container rent-container">
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">Confirm Rental</h2>
+        
+        <div class="bike-preview" th:if="${bike != null}">
+            <img th:src="${bike.type == 'ELECTRIC' ? 'https://images.unsplash.com/photo-1593764592116-bfb2a97c642a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' : 'https://images.unsplash.com/photo-1532298229144-0ee0b6659d31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}" alt="Bike">
+            <div>
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);" th:text="${bike.brand}">GIANT</div>
+                <h3 th:text="${bike.model}">Trance Pro</h3>
+                <div style="color: var(--primary-color); font-weight: 700;">Rs. <span th:text="${bike.pricePerHour}">500</span>/hr</div>
+            </div>
+        </div>
+
+        <form th:action="@{/rentals/rent}" method="POST">
+            <input type="hidden" name="bikeId" th:value="${bike.bikeId}" th:if="${bike != null}">
+            
+            <div class="form-group">
+                <label for="userId">YOUR USER ID</label>
+                <input type="text" id="userId" name="userId" class="form-control" placeholder="U123..." required>
+            </div>
+
+            <div class="form-group">
+                <label for="type">RENTAL TYPE</label>
+                <select id="type" name="type" class="form-control" required>
+                    <option value="HOURLY">Hourly Rental</option>
+                    <option value="DAILY">Daily Rental</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="duration">DURATION (HOURS/DAYS)</label>
+                <input type="number" id="duration" name="duration" class="form-control" value="1" min="1" required>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">Confirm and Pay</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2026 Bike Rental Platform. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
