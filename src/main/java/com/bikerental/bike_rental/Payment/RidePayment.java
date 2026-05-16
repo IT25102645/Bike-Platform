@@ -1,17 +1,21 @@
 package com.bikerental.bike_rental.Payment;
 
+// Inheritance - RidePayment extends Payment
 public class RidePayment extends Payment {
-    private String rideId;
+
+    private String rideId;        // matches RideService → "RIDE-1"
     private double distanceKm;
     private double ratePerKm;
+
+    public RidePayment() {}
 
     public RidePayment(String paymentId, String userId, String rideId,
                        double distanceKm, double ratePerKm,
                        String paymentDate, String status) {
         super(paymentId, userId, 0, paymentDate, status);
-        this.rideId = rideId;
-        this.distanceKm = distanceKm;
-        this.ratePerKm = ratePerKm;
+        this.rideId      = rideId;
+        this.distanceKm  = distanceKm;
+        this.ratePerKm   = ratePerKm;
         this.setAmount(calculatePayment());
     }
 
@@ -21,15 +25,24 @@ public class RidePayment extends Payment {
         return distanceKm * ratePerKm;
     }
 
-    public String getRideId() { return rideId; }
-    public void setRideId(String rideId) { this.rideId = rideId; }
-    public double getDistanceKm() { return distanceKm; }
-    public void setDistanceKm(double distanceKm) { this.distanceKm = distanceKm; }
-    public double getRatePerKm() { return ratePerKm; }
-    public void setRatePerKm(double ratePerKm) { this.ratePerKm = ratePerKm; }
-
     @Override
-    public String toString() {
-        return "RIDE," + super.toString() + "," + rideId + "," + distanceKm + "," + ratePerKm;
+    public String getPaymentType() {
+        return "RIDE";
+    }
+
+    // Getters
+    public String getRideId()       { return rideId; }
+    public double getDistanceKm()   { return distanceKm; }
+    public double getRatePerKm()    { return ratePerKm; }
+
+    // Setters
+    public void setRideId(String rideId)           { this.rideId     = rideId; }
+    public void setDistanceKm(double distanceKm)   { this.distanceKm = distanceKm; }
+    public void setRatePerKm(double ratePerKm)     { this.ratePerKm  = ratePerKm; }
+
+    // File string - extends parent toFileString
+    @Override
+    public String toFileString() {
+        return super.toFileString() + "|" + rideId + "|" + distanceKm + "|" + ratePerKm;
     }
 }
