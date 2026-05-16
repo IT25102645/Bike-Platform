@@ -5,11 +5,13 @@ public class DailyRental extends Rental {
     private int days;
     private double ratePerDay;
 
+    public DailyRental() {}
+
     public DailyRental(String rentalId, String userId, String bikeId,
                        String startDate, String endDate, String status,
                        int days, double ratePerDay) {
         super(rentalId, userId, bikeId, startDate, endDate, status);
-        this.days = days;
+        this.days       = days;
         this.ratePerDay = ratePerDay;
     }
 
@@ -17,6 +19,11 @@ public class DailyRental extends Rental {
     public double calculateFee() {
         double total = days * ratePerDay;
         return total;
+    }
+
+    @Override
+    public String getRentalType() {
+        return "DAILY";
     }
 
     public int getDays() {
