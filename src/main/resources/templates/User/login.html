@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Bike Platform</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .login-container {
+            max-width: 450px;
+            margin: 6rem auto;
+        }
+
+        .card-header {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 2rem;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            text-align: center;
+        }
+
+        .card-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .alert-error {
+            background-color: #ffe5e5;
+            color: var(--danger-color);
+            border: 1px solid #ffcccc;
+        }
+
+        .alert-success {
+            background-color: #e5f9e5;
+            color: var(--success-color);
+            border: 1px solid #ccffcc;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="navbar-brand" href="/">Bike Rental Platform</a>
+    <div class="nav-links">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link active" href="/users/login">Login</a>
+        <a class="nav-link" href="/users/register">Register</a>
+    </div>
+</nav>
+
+<div class="login-container">
+    <div class="card" style="padding: 0; border: none;">
+        <div class="card-header">
+            <h1>Welcome Back</h1>
+            <p>Please login to your account to continue</p>
+        </div>
+        
+        <form th:action="@{/users/login}" method="POST" style="padding: 2rem;">
+            <!-- Alerts -->
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+            <div class="form-group">
+                <label for="email">EMAIL ADDRESS</label>
+                <div style="position: relative;">
+                    <i class="fas fa-envelope" style="position: absolute; left: 1rem; top: 1rem; color: #ccc;"></i>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="you@example.com" style="padding-left: 2.5rem;" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">PASSWORD</label>
+                <div style="position: relative;">
+                    <i class="fas fa-lock" style="position: absolute; left: 1rem; top: 1rem; color: #ccc;"></i>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" style="padding-left: 2.5rem;" required>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">Sign In</button>
+            </div>
+
+            <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
+                Don't have an account? <a href="/users/register" style="color: var(--primary-color); font-weight: 600;">Register here</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2026 Bike Rental Platform. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

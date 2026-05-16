@@ -19,14 +19,14 @@ public class UserController {
     // Show Registration Page
     @GetMapping("/register")
     public String showRegisterPage() {
-        return "user/register";     // → WEB-INF/views/user/register.jsp
+        return "User/register";     // → WEB-INF/views/user/register.jsp
     }
 
     // Show Login Page
 
     @GetMapping("/login")
     public String showLoginPage() {
-        return "user/login";        // → WEB-INF/views/user/login.jsp
+        return "User/login";        // → WEB-INF/views/user/login.jsp
     }
 
     // Show User Profile Page
@@ -39,15 +39,15 @@ public class UserController {
 
             if (user == null) {
                 model.addAttribute("error", "User not found.");
-                return "user/error";
+                return "User/error";
             }
 
             model.addAttribute("user", user);
-            return "user/profile";  // → WEB-INF/views/user/profile.jsp
+            return "User/profile";  // → WEB-INF/views/user/profile.jsp
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/error";
+            return "User/error";
         }
     }
 
@@ -57,11 +57,11 @@ public class UserController {
     public String showUserListPage(Model model) {
         try {
             model.addAttribute("users", userService.getAllUsers());
-            return "user/userList"; // → WEB-INF/views/user/userList.jsp
+            return "User/user-list"; // → WEB-INF/views/user/userList.jsp
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/error";
+            return "User/error";
         }
     }
 
@@ -75,15 +75,15 @@ public class UserController {
 
             if (user == null) {
                 model.addAttribute("error", "User not found.");
-                return "user/error";
+                return "User/error";
             }
 
             model.addAttribute("user", user);
-            return "user/edit";     // → WEB-INF/views/user/edit.jsp
+            return "User/edit";     // → WEB-INF/views/user/edit.jsp
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/error";
+            return "User/error";
         }
     }
 
@@ -126,16 +126,16 @@ public class UserController {
 
             model.addAttribute("success",
                     "Registration successful! Your User ID: " + userId);
-            return "user/register";
+            return "User/register";
 
         } catch (IllegalArgumentException e) {
             // Duplicate email
             model.addAttribute("error", e.getMessage());
-            return "user/register";
+            return "User/register";
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/register";
+            return "User/register";
         }
     }
 
@@ -154,7 +154,7 @@ public class UserController {
 
             if (user == null) {
                 model.addAttribute("error", "Invalid email or password.");
-                return "user/login";
+                return "User/login";
             }
 
             // Pass logged-in user to profile page
@@ -166,7 +166,7 @@ public class UserController {
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/login";
+            return "User/login";
         }
     }
 
@@ -185,7 +185,7 @@ public class UserController {
 
             if (!updated) {
                 model.addAttribute("error", "User not found.");
-                return "user/edit";
+                return "User/edit";
             }
 
             model.addAttribute("success", "Profile updated successfully.");
@@ -194,11 +194,11 @@ public class UserController {
             User updatedUser = userService.findUserById(userId);
             model.addAttribute("user", updatedUser);
 
-            return "user/profile";
+            return "User/profile";
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/edit";
+            return "User/edit";
         }
     }
 
@@ -215,17 +215,17 @@ public class UserController {
 
             if (!updated) {
                 model.addAttribute("error", "Rider not found.");
-                return "user/edit";
+                return "User/edit";
             }
 
             model.addAttribute("success", "License updated successfully.");
             User updatedUser = userService.findUserById(userId);
             model.addAttribute("user", updatedUser);
-            return "user/profile";
+            return "User/profile";
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/edit";
+            return "User/edit";
         }
     }
 
@@ -242,17 +242,17 @@ public class UserController {
 
             if (!updated) {
                 model.addAttribute("error", "Owner not found.");
-                return "user/edit";
+                return "User/edit";
             }
 
             model.addAttribute("success", "Bank account updated successfully.");
             User updatedUser = userService.findUserById(userId);
             model.addAttribute("user", updatedUser);
-            return "user/profile";
+            return "User/profile";
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/edit";
+            return "User/edit";
         }
     }
 
@@ -269,7 +269,7 @@ public class UserController {
 
             if (!deleted) {
                 model.addAttribute("error", "User not found.");
-                return "user/userList";
+                return "User/user-list";
             }
 
             // Redirect to user list after successful delete
@@ -277,7 +277,7 @@ public class UserController {
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/userList";
+            return "User/user-list";
         }
     }
 }
