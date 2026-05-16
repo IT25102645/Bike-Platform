@@ -1,12 +1,17 @@
 package com.bikerental.bike_rental.Bike;
 
+// Inheritance
 public class ManualBike extends Bike {
 
-    // Extra fields specific to manual bikes
     private int gearCount;
     private double longRentalDiscountRate;
 
-    // Constructor
+    // Default constructor
+    public ManualBike() {
+        super();
+    }
+
+    // Parameterized constructor
     public ManualBike(String bikeId, String model, String brand,
                       double pricePerHour, boolean available,
                       String ownerUsername, String description,
@@ -16,12 +21,7 @@ public class ManualBike extends Bike {
         this.longRentalDiscountRate = longRentalDiscountRate;
     }
 
-    public ManualBike() {
-        super();
-    }
-
-    // Polymorphism: Manual bikes get a discount
-
+    // Polymorphism: Manual bikes get a discount on long rentals (> 8 hours)
     @Override
     public double calculateRentalPrice(int hours) {
         double base = getPricePerHour() * hours;
@@ -37,16 +37,32 @@ public class ManualBike extends Bike {
         return "MANUAL";
     }
 
-    // Getters & Setters
-    public int getGearCount()                          { return gearCount; }
-    public void setGearCount(int g)                    { this.gearCount = g; }
+    // Getters
+    public int    getGearCount()              { return gearCount; }
+    public double getLongRentalDiscountRate() { return longRentalDiscountRate; }
 
-    public double getLongRentalDiscountRate()          { return longRentalDiscountRate; }
-    public void   setLongRentalDiscountRate(double d)  { this.longRentalDiscountRate = d; }
+    // Setters
+    public void setGearCount(int g)                   { this.gearCount              = g; }
+    public void setLongRentalDiscountRate(double d)   { this.longRentalDiscountRate = d; }
 
-    // Override file string to include manual-specific fields
+    // File Handling Helper
+    // Extends parent toFileString() to include manual-specific fields
     @Override
     public String toFileString() {
         return super.toFileString() + "|" + gearCount + "|" + longRentalDiscountRate;
+    }
+
+    @Override
+    public String toString() {
+        return "ManualBike{" +
+                "bikeId='"               + getBikeId()              + '\'' +
+                ", model='"              + getModel()                + '\'' +
+                ", brand='"              + getBrand()                + '\'' +
+                ", price="               + getPricePerHour()         +
+                ", available="           + isAvailable()             +
+                ", owner='"              + getOwnerUsername()        + '\'' +
+                ", gearCount="           + gearCount                 +
+                ", discountRate="        + longRentalDiscountRate    +
+                '}';
     }
 }
