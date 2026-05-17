@@ -1,6 +1,6 @@
 package com.bikerental.bike_rental.User;
 
-<<<<<<< Updated upstream
+
 // Encapsulation
 public class User {
 
@@ -59,7 +59,4 @@ public class User {
                 '}';
     }
 }
-=======
-public class nUser {
-}
->>>>>>> Stashed changes
+

@@ -79,7 +79,4 @@ public class RiderUser extends User {
                 '}';
     }
 }
-=======
-public class n\RiderUser {
-}
->>>>>>> Stashed changes
+
