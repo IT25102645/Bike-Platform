@@ -132,10 +132,7 @@
                           th:text="${review[1]}">Type</span>
                 </div>
                 <div class="stars">
-                    <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                        <span th:classappend="${i <= #numbers.formatInteger(review[4], 1)} ? '' : 'empty'">&#9733;</span>
-                    </th:block>
-                    <span style="font-size:12px; color:#999;" th:text="'(' + ${review[4]} + '/5)'"></span>
+                    <span th:text="${review[4]} + '/5 stars'"></span>
                 </div>
                 <div class="review-comment" th:text="${review[5]}">Comment</div>
                 <div class="review-meta">
@@ -293,6 +290,7 @@
         </div>
     </div>
 
+
     <script>
         function openModal() {
             document.getElementById('reviewModal').classList.add('open');
@@ -311,7 +309,6 @@
             btn.classList.add('active');
             document.getElementById(type + 'Panel').classList.add('active');
         }
-        // Auto-open modal if there's an error (form was submitted with errors)
         window.onload = function() {
             const hasError = document.querySelector('.alert-error');
             if (hasError) openModal();
