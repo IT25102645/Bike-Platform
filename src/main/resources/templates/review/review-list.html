@@ -5,6 +5,7 @@
 <head>
     <title>Reviews</title>
     <style>
+        /* ── Stats Bar ── */
         .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0;
             background: #fff; border-bottom: 1px solid #ddd; }
         .stat { text-align: center; padding: 20px 16px; border-right: 1px solid #eee; }
@@ -13,37 +14,81 @@
         .stat-lbl { font-size: 12px; color: #777; margin-top: 4px;
             text-transform: uppercase; letter-spacing: 0.5px; }
 
+        /* ── Section ── */
         .section { padding: 24px; }
-        .section h2 { font-size: 15px; font-family: Georgia, serif; margin-bottom: 16px;
-            color: #2c2c2c; padding-bottom: 8px; border-bottom: 1px solid #ddd; }
+        .section-header { display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #ddd; }
+        .section-header h2 { font-size: 15px; font-family: Georgia, serif;
+            color: #2c2c2c; margin: 0; }
 
+        /* ── Review Cards ── */
         .review-card { background: white; border: 1px solid #ddd; border-radius: 4px;
             padding: 16px; margin-bottom: 12px; border-left: 3px solid #0057b8; }
         .review-card.ride { border-left-color: #28a745; }
-
         .review-header { display: flex; justify-content: space-between;
             align-items: center; margin-bottom: 8px; }
         .reviewer-name { font-size: 14px; font-weight: bold; color: #2c2c2c; }
         .reviewer-date { font-size: 12px; color: #999; }
-
         .badge-bike { background: #d4edda; color: #155724; font-size: 11px;
             padding: 3px 8px; border-radius: 3px; }
         .badge-ride { background: #d1ecf1; color: #0c5460; font-size: 11px;
             padding: 3px 8px; border-radius: 3px; }
-
         .stars { color: #f39c12; font-size: 1rem; margin-bottom: 6px; }
         .stars .empty { color: #ddd; }
-
         .review-comment { font-size: 13px; color: #444; line-height: 1.5; margin-bottom: 8px; }
-
         .review-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; color: #777; }
         .meta-item { background: #f4f4f4; padding: 2px 8px; border-radius: 3px;
             border: 1px solid #ddd; }
-
         .no-reviews { text-align: center; padding: 40px; color: #aaa; font-size: 13px; }
 
+        /* ── Alerts ── */
         .alert { padding: 10px 14px; border-radius: 3px; margin-bottom: 16px; font-size: 13px; }
         .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* ── Modal Overlay ── */
+        .modal-overlay { display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: flex-start;
+            padding-top: 40px; overflow-y: auto; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: #fff; border-radius: 6px; width: 100%; max-width: 680px;
+            padding: 28px; position: relative; margin-bottom: 40px; }
+        .modal-close { position: absolute; top: 14px; right: 16px; background: none;
+            border: none; font-size: 20px; cursor: pointer; color: #666; line-height: 1; }
+        .modal-close:hover { color: #333; }
+        .modal-title { font-size: 16px; font-family: Georgia, serif; color: #2c2c2c;
+            margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+
+        /* ── Tab Bar (inside modal) ── */
+        .tab-bar { display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd; }
+        .tab-btn { padding: 8px 20px; background: none; border: none; cursor: pointer;
+            font-size: 13px; border-bottom: 2px solid transparent; margin-bottom: -1px; color: #777; }
+        .tab-btn.active { border-bottom-color: #0057b8; color: #0057b8; font-weight: bold; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── Form styles ── */
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: bold;
+            margin-bottom: 5px; color: #333; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 7px 10px; border: 1px solid #ccc;
+            border-radius: 3px; font-size: 13px; box-sizing: border-box; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: #0057b8; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        .star-group { display: flex; flex-direction: row-reverse; width: fit-content; gap: 2px; }
+        .star-group input[type="radio"] { display: none; }
+        .star-group label { font-size: 1.6rem; color: #ccc; cursor: pointer; }
+        .star-group input[type="radio"]:checked ~ label,
+        .star-group label:hover,
+        .star-group label:hover ~ label { color: #f39c12; }
+
+        .checkbox-row { display: flex; align-items: center; gap: 8px; }
+        .checkbox-row input { width: auto; }
+        .checkbox-row label { font-weight: normal; font-size: 13px; margin: 0; }
     </style>
 </head>
 <body>
@@ -62,7 +107,11 @@
     </div>
 
     <div class="section">
-        <h2>Customer Reviews</h2>
+        <div class="section-header">
+            <h2>Customer Reviews</h2>
+            <!-- ✅ Write a Review button -->
+            <button class="btn-main" onclick="openModal()">+ Add a Review</button>
+        </div>
 
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
@@ -74,7 +123,6 @@
         <!-- review[0]=id, [1]=type, [2]=userId, [3]=username, [4]=rating, [5]=comment, [6]=date -->
         <div th:each="review : ${reviews}">
             <div class="review-card" th:classappend="${review[1] == 'RIDE'} ? 'ride' : ''">
-
                 <div class="review-header">
                     <div>
                         <span class="reviewer-name" th:text="${review[3]}">Name</span>
@@ -83,18 +131,13 @@
                     <span th:classappend="${review[1] == 'BIKE'} ? 'badge-bike' : 'badge-ride'"
                           th:text="${review[1]}">Type</span>
                 </div>
-
-                <!-- Star rating -->
                 <div class="stars">
                     <th:block th:each="i : ${#numbers.sequence(1, 5)}">
                         <span th:classappend="${i <= #numbers.formatInteger(review[4], 1)} ? '' : 'empty'">&#9733;</span>
                     </th:block>
                     <span style="font-size:12px; color:#999;" th:text="'(' + ${review[4]} + '/5)'"></span>
                 </div>
-
                 <div class="review-comment" th:text="${review[5]}">Comment</div>
-
-                <!-- Meta info -->
                 <div class="review-meta">
                     <span class="meta-item" th:text="'ID: ' + ${review[0]}"></span>
                     <span class="meta-item" th:if="${review[1] == 'BIKE' and review.length > 8}"
@@ -106,10 +149,175 @@
                     <span class="meta-item" th:if="${review[1] == 'RIDE' and review.length > 9}"
                           th:text="${review[9]} + ' min'"></span>
                 </div>
-
             </div>
         </div>
     </div>
+
+    <!-- ✅ Submit Review Modal -->
+    <div class="modal-overlay" id="reviewModal" onclick="closeOnBackdrop(event)">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal()">&#10005;</button>
+            <div class="modal-title">Submit a Review</div>
+
+            <!-- Tab switcher -->
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('bike', this)">Bike Review</button>
+                <button class="tab-btn"        onclick="switchTab('ride', this)">Ride Review</button>
+            </div>
+
+            <!-- Bike Review Form -->
+            <div id="bikePanel" class="tab-panel active">
+                <form th:action="@{/reviews/submit/bike}" method="post">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>User ID</label>
+                            <input type="text" name="userId" placeholder="e.g. U001" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Your Name</label>
+                            <input type="text" name="username" placeholder="Display name" required />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bike ID</label>
+                            <input type="text" name="bikeId" placeholder="e.g. B012" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Bike Name</label>
+                            <input type="text" name="bikeName" placeholder="e.g. Mountain Pro X" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <div class="star-group">
+                            <input type="radio" id="bs5" name="rating" value="5" required /><label for="bs5">&#9733;</label>
+                            <input type="radio" id="bs4" name="rating" value="4" /><label for="bs4">&#9733;</label>
+                            <input type="radio" id="bs3" name="rating" value="3" /><label for="bs3">&#9733;</label>
+                            <input type="radio" id="bs2" name="rating" value="2" /><label for="bs2">&#9733;</label>
+                            <input type="radio" id="bs1" name="rating" value="1" /><label for="bs1">&#9733;</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Bike Condition</label>
+                        <select name="bikeCondition" required>
+                            <option value="">-- Select --</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                            <option value="Poor">Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Comment</label>
+                        <textarea name="comment" placeholder="Share your experience..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-row">
+                            <input type="checkbox" name="wouldRecommend" value="true" id="recommend" />
+                            <label for="recommend">I would recommend this bike</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-main">Submit Bike Review</button>
+                </form>
+            </div>
+
+            <!-- Ride Review Form -->
+            <div id="ridePanel" class="tab-panel">
+                <form th:action="@{/reviews/submit/ride}" method="post">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>User ID</label>
+                            <input type="text" name="userId" placeholder="e.g. U001" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Your Name</label>
+                            <input type="text" name="username" placeholder="Display name" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ride ID</label>
+                        <input type="text" name="rideId" placeholder="e.g. R045" required />
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Distance (km)</label>
+                            <input type="number" name="rideDistanceKm" step="0.1" min="0" placeholder="e.g. 12.5" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (minutes)</label>
+                            <input type="number" name="rideDurationMinutes" min="1" placeholder="e.g. 45" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Overall Rating</label>
+                        <div class="star-group">
+                            <input type="radio" id="rs5" name="rating" value="5" required /><label for="rs5">&#9733;</label>
+                            <input type="radio" id="rs4" name="rating" value="4" /><label for="rs4">&#9733;</label>
+                            <input type="radio" id="rs3" name="rating" value="3" /><label for="rs3">&#9733;</label>
+                            <input type="radio" id="rs2" name="rating" value="2" /><label for="rs2">&#9733;</label>
+                            <input type="radio" id="rs1" name="rating" value="1" /><label for="rs1">&#9733;</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Route Experience</label>
+                            <select name="routeExperience" required>
+                                <option value="">-- Select --</option>
+                                <option value="Scenic">Scenic</option>
+                                <option value="Smooth">Smooth</option>
+                                <option value="Rough">Rough</option>
+                                <option value="Challenging">Challenging</option>
+                                <option value="Urban">Urban</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Safety Rating</label>
+                            <div class="star-group">
+                                <input type="radio" id="sf5" name="safetyRating" value="5" required /><label for="sf5">&#9733;</label>
+                                <input type="radio" id="sf4" name="safetyRating" value="4" /><label for="sf4">&#9733;</label>
+                                <input type="radio" id="sf3" name="safetyRating" value="3" /><label for="sf3">&#9733;</label>
+                                <input type="radio" id="sf2" name="safetyRating" value="2" /><label for="sf2">&#9733;</label>
+                                <input type="radio" id="sf1" name="safetyRating" value="1" /><label for="sf1">&#9733;</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Comment</label>
+                        <textarea name="comment" placeholder="Describe your ride..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-main">Submit Ride Review</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('reviewModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeModal() {
+            document.getElementById('reviewModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function closeOnBackdrop(e) {
+            if (e.target === document.getElementById('reviewModal')) closeModal();
+        }
+        function switchTab(type, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(type + 'Panel').classList.add('active');
+        }
+        // Auto-open modal if there's an error (form was submitted with errors)
+        window.onload = function() {
+            const hasError = document.querySelector('.alert-error');
+            if (hasError) openModal();
+        };
+    </script>
+
 </div>
 </body>
 </html>
