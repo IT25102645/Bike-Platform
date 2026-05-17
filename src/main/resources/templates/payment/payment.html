@@ -1,0 +1,186 @@
+<<<<<<< Updated upstream
+=======
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Payment</title>
+    <style>
+        .form-section {
+            padding: 40px 24px;
+            min-height: calc(100vh - 60px);
+            width: 100%;
+            box-sizing: border-box;
+            background: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .section-title {
+            font-size: 22px;
+            font-family: Georgia, serif;
+            color: #2c2c2c;
+            margin-bottom: 24px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0057b8;
+            width: 100%;
+            max-width: 560px;
+        }
+        .tab-buttons {
+            display: flex;
+            width: 100%;
+            max-width: 560px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 11px;
+            font-size: 13px;
+            border: none;
+            background: #f4f4f4;
+            color: #555;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .tab-btn.active {
+            background: #0057b8;
+            color: white;
+            font-weight: bold;
+        }
+        .form-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 32px;
+            width: 100%;
+            max-width: 560px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            color: #333;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #0057b8;
+            box-shadow: 0 0 0 2px rgba(0,87,184,0.1);
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px 14px;
+            border-radius: 5px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            width: 100%;
+            max-width: 560px;
+        }
+        .pay-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            background: #0057b8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .pay-btn:hover { background: #004494; }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="form-section">
+        <div class="section-title">Make a Payment</div>
+
+        <div class="alert-success" th:if="${message}" th:text="${message}"></div>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('rental')">Rental Payment</button>
+            <button class="tab-btn" onclick="showTab('ride')">Ride Payment</button>
+        </div>
+
+        <!-- Rental Payment Form -->
+        <div id="rentalTab" class="form-card">
+            <form th:action="@{/payments/rental}" method="post">
+                <div class="form-group">
+                    <label>User ID</label>
+                    <input type="text" name="userId" placeholder="Enter User ID" required/>
+                </div>
+                <div class="form-group">
+                    <label>Rental ID</label>
+                    <input type="text" name="rentalId" placeholder="e.g. RENT-1" required/>
+                </div>
+                <div class="form-group">
+                    <label>Duration (Hours)</label>
+                    <input type="number" name="durationHours" placeholder="e.g. 3" min="1" required/>
+                </div>
+                <div class="form-group">
+                    <label>Price Per Hour (LKR)</label>
+                    <input type="number" name="pricePerHour" placeholder="e.g. 250" min="0" step="0.01" required/>
+                </div>
+                <button type="submit" class="pay-btn">Pay Now</button>
+            </form>
+        </div>
+
+        <!-- Ride Payment Form -->
+        <div id="rideTab" class="form-card" style="display:none;">
+            <form th:action="@{/payments/ride}" method="post">
+                <div class="form-group">
+                    <label>User ID</label>
+                    <input type="text" name="userId" placeholder="Enter User ID" required/>
+                </div>
+                <div class="form-group">
+                    <label>Ride ID</label>
+                    <input type="text" name="rideId" placeholder="e.g. RIDE-1" required/>
+                </div>
+                <div class="form-group">
+                    <label>Distance (KM)</label>
+                    <input type="number" name="distanceKm" placeholder="e.g. 10.5" min="0" step="0.1" required/>
+                </div>
+                <div class="form-group">
+                    <label>Rate Per KM (LKR)</label>
+                    <input type="number" name="ratePerKm" placeholder="e.g. 50" min="0" step="0.01" required/>
+                </div>
+                <button type="submit" class="pay-btn">Pay Now</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tab) {
+            document.getElementById('rentalTab').style.display = tab === 'rental' ? 'block' : 'none';
+            document.getElementById('rideTab').style.display = tab === 'ride' ? 'block' : 'none';
+            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                btn.classList.toggle('active',
+                    (tab === 'rental' && i === 0) || (tab === 'ride' && i === 1));
+            });
+        }
+    </script>
+</div>
+</body>
+</html>
+>>>>>>> Stashed changes
