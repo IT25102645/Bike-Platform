@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Rides</title>
+    <style>
+        .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+        .page-header h1{font-size:16px;font-family:Georgia,serif;color:#2c2c2c;padding-bottom:8px;border-bottom:1px solid #ddd;margin:0;flex:1;}
+
+        .stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:0;background:#fff;border:1px solid #ddd;border-radius:4px;margin-bottom:20px;}
+        .stat-item{text-align:center;padding:16px;border-right:1px solid #eee;}
+        .stat-item:last-child{border-right:none;}
+        .stat-num{font-size:22px;font-weight:bold;color:#0057b8;}
+        .stat-lbl{font-size:11px;color:#777;margin-top:3px;text-transform:uppercase;letter-spacing:0.5px;}
+
+        .rides-table{background:white;border:1px solid #ddd;border-radius:4px;overflow:hidden;}
+        .rides-table table{width:100%;border-collapse:collapse;font-size:13px;}
+        .rides-table th{background:#f7f7f7;padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#555;border-bottom:1px solid #ddd;font-weight:600;}
+        .rides-table td{padding:10px 14px;border-bottom:1px solid #eee;color:#333;vertical-align:middle;}
+        .rides-table tr:last-child td{border-bottom:none;}
+        .rides-table tr:hover td{background:#f9f9f9;}
+
+        .badge{font-size:11px;padding:3px 8px;border-radius:3px;font-weight:500;}
+        .badge-driver{background:#cce5ff;color:#004085;}
+        .badge-passenger{background:#d4edda;color:#155724;}
+        .badge-active{background:#d4edda;color:#155724;}
+        .badge-cancelled{background:#f8d7da;color:#721c24;}
+        .badge-completed{background:#e2e3e5;color:#383d41;}
+
+        .action-btns{display:flex;gap:6px;}
+        .btn-edit{background:#0057b8;color:white;border:none;padding:4px 12px;font-size:11px;border-radius:3px;cursor:pointer;text-decoration:none;}
+        .btn-edit:hover{background:#004494;color:white;}
+        .btn-delete{background:#dc3545;color:white;border:none;padding:4px 12px;font-size:11px;border-radius:3px;cursor:pointer;text-decoration:none;}
+        .btn-delete:hover{background:#b02a37;color:white;}
+
+        .empty-state{text-align:center;padding:40px;color:#999;font-size:13px;}
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="page-content">
+
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">Ride Sharing Management</h1>
+            <div style="display:flex;gap:10px;margin-left:20px;">
+                <a th:href="@{/rides/create}" class="btn-main">+ Create Ride</a>
+                <a th:href="@{/rides/join}" class="btn-main" style="background:#28a745;">Join a Ride</a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-num" th:text="${totalRides}">0</div>
+                <div class="stat-lbl">Total Rides</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" style="color:#28a745;">
+                    <span th:text="${#lists.size(rides.?[#arrays.length(#this) > 8 and #this[8] == 'ACTIVE'])}">0</span>
+                </div>
+                <div class="stat-lbl">Active Rides</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" style="color:#6c757d;">
+                    <span th:text="${#lists.size(rides.?[#arrays.length(#this) > 1 and #this[1] == 'DRIVER'])}">0</span>
+                </div>
+                <div class="stat-lbl">Driver Rides</div>
+            </div>
+        </div>
+
+        <!-- Rides Table -->
+        <div class="rides-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>Ride ID</th>
+                    <th>Type</th>
+                    <th>User ID</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Seats</th>
+                    <th>Status</th>
+                    <th>Cost (LKR)</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(rides)}">
+                    <td colspan="11" class="empty-state">No rides found. Create one to get started.</td>
+                </tr>
+                <tr th:each="ride : ${rides}">
+                    <td th:text="${ride[0]}">-</td>
+                    <td>
+                        <span th:if="${ride[1] == 'DRIVER'}" class="badge badge-driver">Driver</span>
+                        <span th:if="${ride[1] == 'PASSENGER'}" class="badge badge-passenger">Passenger</span>
+                    </td>
+                    <td th:text="${ride[2]}">-</td>
+                    <td th:text="${ride[3]}">-</td>
+                    <td th:text="${ride[4]}">-</td>
+                    <td th:text="${ride[5]}">-</td>
+                    <td th:text="${ride[6]}">-</td>
+                    <td th:text="${ride[7]}">-</td>
+                    <td>
+                        <span th:if="${ride[8] == 'ACTIVE'}" class="badge badge-active">Active</span>
+                        <span th:if="${ride[8] == 'CANCELLED'}" class="badge badge-cancelled">Cancelled</span>
+                        <span th:if="${ride[8] == 'COMPLETED'}" class="badge badge-completed">Completed</span>
+                    </td>
+                    <td th:text="${ride[9]}">-</td>
+                    <td>
+                        <div class="action-btns">
+                            <a th:href="@{/rides/edit/{id}(id=${ride[0]})}" class="btn-edit">Edit</a>
+                            <a th:href="@{/rides/delete/{id}(id=${ride[0]})}" class="btn-delete"
+                               onclick="return confirm('Cancel this ride?')">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
