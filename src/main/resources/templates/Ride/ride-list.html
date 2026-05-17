@@ -56,15 +56,11 @@
                 <div class="stat-lbl">Total Rides</div>
             </div>
             <div class="stat-item">
-                <div class="stat-num" style="color:#28a745;">
-                    <span th:text="${#lists.size(rides.?[#arrays.length(#this) > 8 and #this[8] == 'ACTIVE'])}">0</span>
-                </div>
+                <div class="stat-num" style="color:#28a745;">0</div>
                 <div class="stat-lbl">Active Rides</div>
             </div>
             <div class="stat-item">
-                <div class="stat-num" style="color:#6c757d;">
-                    <span th:text="${#lists.size(rides.?[#arrays.length(#this) > 1 and #this[1] == 'DRIVER'])}">0</span>
-                </div>
+                <div class="stat-num" style="color:#6c757d;">0</div>
                 <div class="stat-lbl">Driver Rides</div>
             </div>
         </div>
