@@ -44,7 +44,7 @@
                     </div>
                     <div class="form-group">
                         <label for="bikeId">Bike ID</label>
-                        <input type="text" id="bikeId" name="bikeId" placeholder="e.g. BIKE-001" required />
+                        <input type="text" id="bikeId" name="bikeId" th:value="${bikeId}" placeholder="e.g. BIKE-001" required />
                     </div>
                 </div>
 
@@ -73,11 +73,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="duration" id="durationLabel">Duration (Hours)</label>
-                        <input type="number" id="duration" name="duration" min="1" placeholder="e.g. 3" required onchange="calculateTotal()" />
+                        <input type="number" id="duration" name="duration" min="1" placeholder="e.g. 3" required oninput="calculateTotal()" />
                     </div>
                     <div class="form-group">
                         <label for="rate" id="rateLabel">Rate Per Hour (LKR)</label>
-                        <input type="number" id="rate" name="rate" step="0.01" min="0" placeholder="e.g. 250" required onchange="calculateTotal()" />
+                        <input type="number" id="rate" name="rate" step="0.01" min="0" placeholder="e.g. 250" required oninput="calculateTotal()" />
                     </div>
                 </div>
 
@@ -95,28 +95,29 @@
             </form>
         </div>
     </div>
-</div>
 
-<script>
-    function updateRateLabel(type) {
-        const durationLabel = document.getElementById('durationLabel');
-        const rateLabel     = document.getElementById('rateLabel');
-        if (type === 'DAILY') {
-            durationLabel.textContent = 'Duration (Days)';
-            rateLabel.textContent     = 'Rate Per Day (LKR)';
-        } else {
-            durationLabel.textContent = 'Duration (Hours)';
-            rateLabel.textContent     = 'Rate Per Hour (LKR)';
+    <script>
+        function updateRateLabel(type) {
+            const durationLabel = document.getElementById('durationLabel');
+            const rateLabel     = document.getElementById('rateLabel');
+            if (type === 'DAILY') {
+                durationLabel.textContent = 'Duration (Days)';
+                rateLabel.textContent     = 'Rate Per Day (LKR)';
+            } else {
+                durationLabel.textContent = 'Duration (Hours)';
+                rateLabel.textContent     = 'Rate Per Hour (LKR)';
+            }
+            calculateTotal();
         }
-        calculateTotal();
-    }
 
-    function calculateTotal() {
-        const duration = parseFloat(document.getElementById('duration').value) || 0;
-        const rate     = parseFloat(document.getElementById('rate').value)     || 0;
-        const total    = duration * rate;
-        document.getElementById('totalPrice').textContent = 'LKR ' + total.toFixed(2);
-    }
-</script>
+        function calculateTotal() {
+            const duration = parseFloat(document.getElementById('duration').value) || 0;
+            const rate     = parseFloat(document.getElementById('rate').value)     || 0;
+            const total    = duration * rate;
+            document.getElementById('totalPrice').textContent = 'LKR ' + total.toFixed(2);
+        }
+    </script>
+
+</div>
 </body>
 </html>
