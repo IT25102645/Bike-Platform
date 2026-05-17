@@ -46,11 +46,11 @@
                 <div class="stat-lbl">Total Rentals</div>
             </div>
             <div class="stat-box">
-                <div class="stat-num">0</div>
+                <div class="stat-num" th:text="${activeRentals}">0</div>
                 <div class="stat-lbl">Active Rentals</div>
             </div>
             <div class="stat-box">
-                <div class="stat-num">0</div>
+                <div class="stat-num" th:text="${completedRentals}">0</div>
                 <div class="stat-lbl">Completed</div>
             </div>
         </div>

@@ -2,83 +2,71 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
-<head>
-    <title>Search Bikes</title>
+<head><title>Search Bikes</title>
     <style>
-        .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-        .search-bar input { flex: 1; padding: 9px 14px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; color: #333; }
-        .search-bar input:focus { outline: none; border-color: #0057b8; }
-
-        .bike-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .bike-card { background: white; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; }
-        .bike-img  { background: #f0f0f0; height: 90px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #ddd; }
-        .bike-img span { font-size: 12px; color: #999; letter-spacing: 0.5px; text-transform: uppercase; }
-        .bike-info { padding: 14px; }
-        .bike-name  { font-size: 14px; font-weight: bold; color: #2c2c2c; }
-        .bike-type  { font-size: 12px; color: #888; margin-top: 3px; }
-        .bike-price { font-size: 14px; font-weight: bold; color: #0057b8; margin-top: 8px; }
-        .bike-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee; }
-
-        .badge-av { background: #d4edda; color: #155724; font-size: 11px; padding: 3px 8px; border-radius: 3px; }
-        .badge-un { background: #f8d7da; color: #721c24; font-size: 11px; padding: 3px 8px; border-radius: 3px; }
-        .badge-el { background: #d0e8ff; color: #003d82; font-size: 11px; padding: 3px 8px; border-radius: 3px; }
-        .badge-mn { background: #e8f5e9; color: #1b5e20; font-size: 11px; padding: 3px 8px; border-radius: 3px; }
-
-        .btn-edit { background: #0057b8; color: white; border: none; padding: 5px 14px; font-size: 12px; border-radius: 3px; cursor: pointer; text-decoration: none; }
-        .btn-edit:hover { background: #004494; color: white; }
-
-        .result-info { font-size: 13px; color: #666; margin-bottom: 14px; }
-        .empty-msg   { text-align: center; padding: 40px; color: #999; font-size: 13px; }
+        .section{padding:24px;}
+        .section h2{font-size:15px;font-family:Georgia,serif;margin-bottom:16px;color:#2c2c2c;padding-bottom:8px;border-bottom:1px solid #ddd;}
+        .search-bar{display:flex;gap:10px;margin-bottom:20px;}
+        .search-bar input{flex:1;padding:8px 12px;border:1px solid #ccc;border-radius:3px;font-size:13px;color:#333;}
+        .search-bar input:focus{outline:none;border-color:#0057b8;}
+        .bike-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+        .bike-card{background:white;border:1px solid #ddd;border-radius:4px;overflow:hidden;}
+        .bike-img{background:#f0f0f0;height:100px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #ddd;}
+        .bike-img span{font-size:13px;color:#999;letter-spacing:0.5px;text-transform:uppercase;}
+        .bike-info{padding:14px;}
+        .bike-name{font-size:14px;font-weight:bold;color:#2c2c2c;}
+        .bike-type{font-size:12px;color:#888;margin-top:3px;}
+        .bike-price{font-size:14px;font-weight:bold;color:#0057b8;margin-top:8px;}
+        .bike-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid #eee;}
+        .badge-av{background:#d4edda;color:#155724;font-size:11px;padding:3px 8px;border-radius:3px;}
+        .badge-un{background:#f8d7da;color:#721c24;font-size:11px;padding:3px 8px;border-radius:3px;}
+        .badge-el{background:#d0e8ff;color:#003d82;font-size:11px;padding:3px 8px;border-radius:3px;}
+        .badge-mn{background:#e8f5e9;color:#1b5e20;font-size:11px;padding:3px 8px;border-radius:3px;}
+        .result-info{font-size:13px;color:#666;margin-bottom:14px;}
+        .empty-msg{text-align:center;padding:40px;color:#999;font-size:13px;}
     </style>
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="page-content">
-        <div class="page-title">Search Bikes</div>
+    <div class="section">
+        <h2>Search Bikes</h2>
 
-        <!-- Search Bar -->
         <form th:action="@{/bikes/search}" method="get" class="search-bar">
-            <input type="text" name="keyword" th:value="${keyword}"
-                   placeholder="Search by model, brand, or type..." />
+            <input type="text" name="keyword" th:value="${keyword}" placeholder="Search by model, brand, or type..." />
             <button type="submit" class="btn-main">Search</button>
             <a th:href="@{/bikes}" class="btn-main" style="background:#6c757d;">All Bikes</a>
         </form>
 
-        <!-- Result Info -->
         <div th:if="${keyword != null and !keyword.isEmpty()}" class="result-info">
             Results for: <strong th:text="${keyword}"></strong>
             &nbsp;|&nbsp; <span th:text="${bikes != null ? bikes.size() : 0}">0</span> bike(s) found
         </div>
 
-        <!-- Bike Grid -->
         <div th:if="${bikes != null and !bikes.isEmpty()}" class="bike-grid">
             <div class="bike-card" th:each="bike : ${bikes}">
                 <div class="bike-img">
                     <span th:text="${bike.bikeType == 'ELECTRIC'} ? 'Electric Bike' : 'Manual Bike'">Bike</span>
                 </div>
                 <div class="bike-info">
-                    <div class="bike-name" th:text="${bike.model}">Model</div>
+                    <div class="bike-name" th:text="${bike.brand + ' ' + bike.model}">Bike Name</div>
                     <div class="bike-type">
                         <span th:if="${bike.bikeType == 'ELECTRIC'}" class="badge-el">Electric</span>
                         <span th:if="${bike.bikeType == 'MANUAL'}"   class="badge-mn">Manual</span>
-                        &nbsp;<span th:text="${bike.brand}">Brand</span>
                     </div>
-                    <div class="bike-price" th:text="'LKR ' + ${bike.pricePerHour} + ' / hr'">LKR 250 / hr</div>
+                    <div class="bike-price" th:text="'LKR ' + ${bike.pricePerHour} + ' / hr'">Price</div>
                     <div class="bike-footer">
                         <span th:if="${bike.available}"  class="badge-av">Available</span>
-                        <span th:if="${!bike.available}" class="badge-un">Unavailable</span>
-                        <a th:href="@{/bikes/edit/{id}(id=${bike.bikeId})}" class="btn-edit">Edit</a>
+                        <span th:if="${!bike.available}" class="badge-un">Rented</span>
+                        <a th:href="@{/bikes/edit/{id}(id=${bike.bikeId})}" class="btn-main" style="font-size:11px;padding:4px 10px;">Edit</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Empty State -->
         <div th:if="${bikes == null or bikes.isEmpty()}" class="empty-msg">
             <span th:if="${keyword != null and !keyword.isEmpty()}">No bikes found for "<strong th:text="${keyword}"></strong>"</span>
             <span th:if="${keyword == null or keyword.isEmpty()}">Enter a keyword to search bikes.</span>
         </div>
-
     </div>
 </div>
 </body>

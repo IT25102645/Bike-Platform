@@ -79,4 +79,3 @@ public class RiderUser extends User {
                 '}';
     }
 }
-

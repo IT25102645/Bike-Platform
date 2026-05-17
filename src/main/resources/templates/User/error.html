@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Error</title></head>
+<body>
+<div layout:fragment="content">
+    <div style="max-width:500px;margin:100px auto;text-align:center;background:white;padding:50px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+        <h1 style="color:#d9534f;font-size:48px;margin-bottom:20px;"><i class="fas fa-exclamation-triangle"></i></h1>
+        <h2 style="margin-bottom:15px;font-family:Georgia,serif;">Oops! Something went wrong</h2>
+        <p style="color:#666;margin-bottom:30px;" th:text="${error}">An unexpected error occurred.</p>
+        <a href="/" class="btn-main">Back to Home</a>
+    </div>
+</div>
+</body>
+</html>

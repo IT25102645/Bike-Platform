@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>User List</title>
+    <style>
+        .list-card{background:white;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.08);margin-top:20px;overflow:hidden;}
+        .list-header{padding:25px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;}
+        .list-header h2{font-size:18px;font-family:Georgia,serif;}
+        
+        .user-table{width:100%;border-collapse:collapse;}
+        .user-table th{background:#f9f9f9;padding:15px 25px;text-align:left;font-size:11px;font-weight:bold;color:#999;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #eee;}
+        .user-table td{padding:15px 25px;border-bottom:1px solid #eee;font-size:14px;color:#444;}
+        .user-table tr:hover td{background:#fafafa;}
+        
+        .role-pill{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:bold;text-transform:uppercase;}
+        .pill-rider{background:#e7f3ff;color:#007bff;}
+        .pill-owner{background:#fff0f7;color:#d63384;}
+        .pill-user{background:#f2f2f2;color:#666;}
+        
+        .action-link{color:#0057b8;text-decoration:none;font-weight:bold;font-size:13px;}
+        .action-link:hover{text-decoration:underline;}
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="list-card">
+        <div class="list-header">
+            <h2>User Directory</h2>
+            <a th:href="@{/users/register}" class="btn-main">Add User</a>
+        </div>
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="u : ${users}">
+                    <td th:text="${u.userId}">U123</td>
+                    <td style="font-weight:bold;" th:text="${u.name}">John</td>
+                    <td th:text="${u.email}">john@example.com</td>
+                    <td>
+                        <span class="role-pill" 
+                              th:classappend="${u.role == 'RIDER' ? 'pill-rider' : (u.role == 'OWNER' ? 'pill-owner' : 'pill-user')}"
+                              th:text="${u.role}">RIDER</span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/users/profile/' + ${u.userId}}" class="action-link">View</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

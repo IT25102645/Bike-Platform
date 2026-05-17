@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Edit Profile</title>
+    <style>
+        .form-card{max-width:600px;margin:30px auto;background:white;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.08);padding:30px;}
+        .form-group{margin-bottom:20px;}
+        .form-group label{display:block;font-size:12px;font-weight:bold;color:#666;margin-bottom:8px;text-transform:uppercase;}
+        .form-control{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;}
+        .alert{padding:12px;border-radius:4px;margin-bottom:20px;font-size:13px;}
+        .alert-error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="form-card" th:if="${user != null}">
+        <h2 class="page-title">Edit Profile</h2>
+        
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <form th:action="@{'/users/update/' + ${user.userId}}" method="POST">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" th:value="${user.name}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" th:value="${user.email}" class="form-control" disabled style="background:#f9f9f9;">
+                <small style="color:#999;">Email cannot be changed.</small>
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" name="phone" th:value="${user.phone}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>New Password (Optional)</label>
+                <input type="password" name="password" class="form-control" placeholder="Leave blank to keep current">
+            </div>
+
+            <button type="submit" class="btn-main" style="width:100%;margin-top:10px;">Update Profile</button>
+        </form>
+
+        <div th:if="${user.role == 'RIDER'}" style="margin-top:30px;">
+            <h3 style="font-size:12px;font-weight:bold;color:#999;text-transform:uppercase;margin-bottom:15px;">Rider Information</h3>
+            <form th:action="@{'/users/update/license/' + ${user.userId}}" method="POST">
+                <div class="form-group">
+                    <label>License Number</label>
+                    <input type="text" name="licenseNumber" th:value="${user.licenseNumber}" class="form-control" required>
+                </div>
+                <button type="submit" class="btn-out" style="width:100%;">Update License</button>
+            </form>
+        </div>
+
+        <div th:if="${user.role == 'OWNER'}" style="margin-top:30px;">
+            <h3 style="font-size:12px;font-weight:bold;color:#999;text-transform:uppercase;margin-bottom:15px;">Owner Information</h3>
+            <form th:action="@{'/users/update/bank/' + ${user.userId}}" method="POST">
+                <div class="form-group">
+                    <label>Bank Account Number</label>
+                    <input type="text" name="bankAccount" th:value="${user.bankAccount}" class="form-control" required>
+                </div>
+                <button type="submit" class="btn-out" style="width:100%;">Update Bank Info</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

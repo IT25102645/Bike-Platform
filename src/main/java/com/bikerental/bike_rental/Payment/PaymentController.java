@@ -8,13 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/payment")
+@RequestMapping("/payments")
 public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
 
-    // READ - Payment History Page
     @GetMapping("/history")
     public String paymentHistory(Model model) {
         List<String[]> payments = paymentService.getAllPayments();
@@ -22,13 +21,11 @@ public class PaymentController {
         return "payment/payment-history";
     }
 
-    // READ - Payment page
     @GetMapping
     public String paymentPage() {
         return "payment/payment";
     }
 
-    // CREATE - Rental Payment (rentalId matches RENT-1 format)
     @PostMapping("/rental")
     public String processRentalPayment(
             @RequestParam String userId,
@@ -54,10 +51,9 @@ public class PaymentController {
         model.addAttribute("status",      payment.getStatus());
         model.addAttribute("type",        payment.getPaymentType());
         model.addAttribute("rentalId",    payment.getRentalId());
-        return "payment/invoive";
+        return "payment/invoice";
     }
 
-    // CREATE - Ride Payment (rideId matches RIDE-1 format)
     @PostMapping("/ride")
     public String processRidePayment(
             @RequestParam String userId,
@@ -83,22 +79,20 @@ public class PaymentController {
         model.addAttribute("status",     payment.getStatus());
         model.addAttribute("type",       payment.getPaymentType());
         model.addAttribute("rideId",     payment.getRideId());
-        return "payment/invoive";
+        return "payment/invoice";
     }
 
-    // UPDATE - Payment status
     @PostMapping("/update/{paymentId}")
     public String updateStatus(
             @PathVariable String paymentId,
             @RequestParam String status) {
         paymentService.updatePaymentStatus(paymentId, status);
-        return "redirect:/payment/history";
+        return "redirect:/payments/history";
     }
 
-    // DELETE - Payment
     @PostMapping("/delete/{paymentId}")
     public String deletePayment(@PathVariable String paymentId) {
         paymentService.deletePayment(paymentId);
-        return "redirect:/payment/history";
+        return "redirect:/payments/history";
     }
 }
