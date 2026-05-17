@@ -2,26 +2,56 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
-<head><title>Return Bike</title></head>
+<head>
+    <title>Return Bike</title>
+    <style>
+        .form-card { background: white; border: 1px solid #ddd; border-radius: 4px; padding: 24px; max-width: 500px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; }
+        .form-group input {
+            width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 3px;
+            font-size: 13px; color: #333; background: #fafafa;
+        }
+        .form-group input:focus { outline: none; border-color: #0057b8; background: white; }
+        .form-group input[readonly] { background: #f0f0f0; color: #888; cursor: not-allowed; }
+        .alert { padding: 10px 14px; border-radius: 3px; font-size: 13px; margin-bottom: 16px; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .btn-secondary { background: #6c757d; color: white; border: none; padding: 8px 20px; border-radius: 3px; font-size: 13px; cursor: pointer; text-decoration: none; }
+        .btn-secondary:hover { background: #5a6268; color: white; }
+        .info-box { background: #f7faff; border: 1px solid #e0e8f0; border-radius: 4px; padding: 14px; margin-bottom: 16px; }
+        .info-box p { font-size: 13px; color: #555; margin: 0; }
+        .info-box strong { color: #0057b8; }
+    </style>
+</head>
 <body>
 <div layout:fragment="content">
     <div class="page-content">
-        <h2 class="page-title">🔄 Return Bike</h2>
-        <div style="background: white; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 2rem; max-width: 500px;">
+        <div class="page-title">Return Bike</div>
+
+        <!-- Error Message -->
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div class="form-card">
+
+            <!-- Rental Info -->
+            <div class="info-box">
+                <p>Rental ID: <strong th:text="${rentalId}">RENT-1</strong></p>
+            </div>
+
             <form th:action="@{/rentals/return/{id}(id=${rentalId})}" method="post">
-                <div class="mb-3">
-                    <label style="font-size: 14px; color: #555; display: block; margin-bottom: 4px;">Rental ID</label>
-                    <input type="text" class="form-control" th:value="${rentalId}" readonly
-                           style="border-radius: 8px; background: #f8f9fa;">
+
+                <!-- Return Date -->
+                <div class="form-group">
+                    <label for="endDate">Return Date</label>
+                    <input type="date" id="endDate" name="endDate" th:value="${returnDate}" required />
                 </div>
-                <div class="mb-3">
-                    <label style="font-size: 14px; color: #555; display: block; margin-bottom: 4px;">Return Date</label>
-                    <input type="date" name="endDate" class="form-control" required style="border-radius: 8px;">
+
+                <!-- Buttons -->
+                <div class="d-flex gap-3 mt-3">
+                    <button type="submit" class="btn-main">Confirm Return</button>
+                    <a th:href="@{/rentals}" class="btn-secondary">Cancel</a>
                 </div>
-                <div style="display: flex; gap: 12px; margin-top: 1rem;">
-                    <button type="submit" class="btn-main">Return Bike</button>
-                    <a href="/rentals" style="background: transparent; color: #1a1a2e; border: 1px solid #1a1a2e; padding: 8px 20px; border-radius: 8px; text-decoration: none;">Cancel</a>
-                </div>
+
             </form>
         </div>
     </div>

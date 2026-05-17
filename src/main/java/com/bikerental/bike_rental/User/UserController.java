@@ -1,5 +1,6 @@
 package com.bikerental.bike_rental.User;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,28 +11,24 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     // Inject UserService
+
     @Autowired
     private UserService userService;
 
 
-
     // Show Registration Page
-
     @GetMapping("/register")
     public String showRegisterPage() {
-        return "user/register";     // → WEB-INF/views/user/register.jsp
+        return "User/register";
     }
-
 
     // Show Login Page
-
     @GetMapping("/login")
     public String showLoginPage() {
-        return "user/login";        // → WEB-INF/views/user/login.jsp
+        return "User/login";
     }
 
-
-    //  Show User Profile Page
+    // Show User Profile Page
 
     @GetMapping("/profile/{userId}")
     public String showProfilePage(@PathVariable String userId,
@@ -41,34 +38,38 @@ public class UserController {
 
             if (user == null) {
                 model.addAttribute("error", "User not found.");
-                return "user/error";
+                return "User/error";
             }
 
             model.addAttribute("user", user);
-            return "user/profile";  // → WEB-INF/views/user/profile.jsp
+            return "User/profile";
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/error";
+            return "User/error";
         }
     }
 
-
-    //  Show User List Page (Admin)
+    // Show User List Page
 
     @GetMapping("/list")
     public String showUserListPage(Model model) {
         try {
             model.addAttribute("users", userService.getAllUsers());
-            return "user/userList"; // → WEB-INF/views/user/userList.jsp
-
+            return "User/user-list";
         } catch (Exception e) {
-            model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/error";
+            model.addAttribute("error", "Could not load users.");
+            return "User/error";
         }
     }
 
-    //  Show Edit Page
+    // Handle base /users path
+    @GetMapping("")
+    public String handleBaseMapping() {
+        return "redirect:/users/list";
+    }
+
+    // Show Edit Page
 
     @GetMapping("/edit/{userId}")
     public String showEditPage(@PathVariable String userId,
@@ -78,18 +79,17 @@ public class UserController {
 
             if (user == null) {
                 model.addAttribute("error", "User not found.");
-                return "user/error";
+                return "User/error";
             }
 
             model.addAttribute("user", user);
-            return "user/edit";     // → WEB-INF/views/user/edit.jsp
+            return "User/edit";     // → WEB-INF/views/User/edit.jsp
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/error";
+            return "User/error";
         }
     }
-
 
 
     //  CREATE - Register new user
@@ -130,21 +130,21 @@ public class UserController {
 
             model.addAttribute("success",
                     "Registration successful! Your User ID: " + userId);
-            return "user/register";
+            return "User/register";
 
         } catch (IllegalArgumentException e) {
             // Duplicate email
             model.addAttribute("error", e.getMessage());
-            return "user/register";
+            return "User/register";
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/register";
+            return "User/register";
         }
     }
 
 
-    //  CREATE - LOGIN
+    //  LOGIN
 
     @PostMapping("/login")
     public String loginUser(
@@ -158,7 +158,7 @@ public class UserController {
 
             if (user == null) {
                 model.addAttribute("error", "Invalid email or password.");
-                return "user/login";
+                return "User/login";
             }
 
             // Pass logged-in user to profile page
@@ -170,10 +170,9 @@ public class UserController {
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/login";
+            return "User/login";
         }
     }
-
 
 
     //  UPDATE - Update user profile
@@ -190,7 +189,7 @@ public class UserController {
 
             if (!updated) {
                 model.addAttribute("error", "User not found.");
-                return "user/edit";
+                return "User/edit";
             }
 
             model.addAttribute("success", "Profile updated successfully.");
@@ -199,15 +198,15 @@ public class UserController {
             User updatedUser = userService.findUserById(userId);
             model.addAttribute("user", updatedUser);
 
-            return "user/profile";
+            return "User/profile";
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/edit";
+            return "User/edit";
         }
     }
 
-    //  UPDATE - Rider license number
+    // UPDATE - Rider license number
 
     @PostMapping("/update/license/{userId}")
     public String updateLicense(
@@ -220,21 +219,21 @@ public class UserController {
 
             if (!updated) {
                 model.addAttribute("error", "Rider not found.");
-                return "user/edit";
+                return "User/edit";
             }
 
             model.addAttribute("success", "License updated successfully.");
             User updatedUser = userService.findUserById(userId);
             model.addAttribute("user", updatedUser);
-            return "user/profile";
+            return "User/profile";
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/edit";
+            return "User/edit";
         }
     }
 
-    //  UPDATE - Owner bank account
+    // UPDATE - Owner bank account
 
     @PostMapping("/update/bank/{userId}")
     public String updateBankAccount(
@@ -247,20 +246,19 @@ public class UserController {
 
             if (!updated) {
                 model.addAttribute("error", "Owner not found.");
-                return "user/edit";
+                return "User/edit";
             }
 
             model.addAttribute("success", "Bank account updated successfully.");
             User updatedUser = userService.findUserById(userId);
             model.addAttribute("user", updatedUser);
-            return "user/profile";
+            return "User/profile";
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/edit";
+            return "User/edit";
         }
     }
-
 
 
     //  DELETE - Remove user account
@@ -275,7 +273,7 @@ public class UserController {
 
             if (!deleted) {
                 model.addAttribute("error", "User not found.");
-                return "user/userList";
+                return "User/user-list";
             }
 
             // Redirect to user list after successful delete
@@ -283,7 +281,7 @@ public class UserController {
 
         } catch (Exception e) {
             model.addAttribute("error", "System error: " + e.getMessage());
-            return "user/userList";
+            return "User/user-list";
         }
     }
 }

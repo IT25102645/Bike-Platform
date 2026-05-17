@@ -2,47 +2,109 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
-<head><title>Rental History</title></head>
+<head>
+    <title>Rental History</title>
+    <style>
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-box { background: white; border: 1px solid #ddd; border-radius: 4px; padding: 16px; text-align: center; }
+        .stat-num { font-size: 24px; font-weight: bold; color: #0057b8; }
+        .stat-lbl { font-size: 12px; color: #777; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .rental-table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; font-size: 13px; }
+        .rental-table th { background: #2c2c2c; color: #ccc; padding: 10px 14px; text-align: left; font-weight: normal; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .rental-table td { padding: 10px 14px; border-bottom: 1px solid #eee; color: #333; }
+        .rental-table tr:last-child td { border-bottom: none; }
+        .rental-table tr:hover td { background: #f9f9f9; }
+
+        .badge-active    { background: #d4edda; color: #155724; font-size: 11px; padding: 3px 8px; border-radius: 3px; }
+        .badge-completed { background: #d0e8ff; color: #003d82; font-size: 11px; padding: 3px 8px; border-radius: 3px; }
+        .badge-hourly    { background: #fff3cd; color: #856404; font-size: 11px; padding: 3px 8px; border-radius: 3px; }
+        .badge-daily     { background: #e8f5e9; color: #1b5e20; font-size: 11px; padding: 3px 8px; border-radius: 3px; }
+
+        .btn-return { background: #0057b8; color: white; border: none; padding: 5px 12px; border-radius: 3px; font-size: 12px; cursor: pointer; text-decoration: none; }
+        .btn-delete { background: #dc3545; color: white; border: none; padding: 5px 12px; border-radius: 3px; font-size: 12px; cursor: pointer; text-decoration: none; }
+        .btn-return:hover { background: #004494; color: white; }
+        .btn-delete:hover { background: #b02a37; color: white; }
+
+        .empty-msg { text-align: center; padding: 40px; color: #999; font-size: 13px; }
+    </style>
+</head>
 <body>
 <div layout:fragment="content">
     <div class="page-content">
-        <h2 class="page-title">📋 Rental History</h2>
-        <a href="/rentals/rent" class="btn-main" style="text-decoration: none; margin-bottom: 1.5rem; display: inline-block;">+ Rent a Bike</a>
-        <div style="background: white; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 1.5rem; margin-top: 1rem;">
-            <table class="table table-hover" style="margin: 0;">
+
+        <div class="toolbar">
+            <div class="page-title" style="margin:0; border:none;">Rental History</div>
+            <a th:href="@{/rentals/rent}" class="btn-main">+ New Rental</a>
+        </div>
+
+        <!-- Stats -->
+        <div class="stat-row">
+            <div class="stat-box">
+                <div class="stat-num" th:text="${totalRentals} ?: '0'">0</div>
+                <div class="stat-lbl">Total Rentals</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num" th:text="${activeRentals}">0</div>
+                <div class="stat-lbl">Active Rentals</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num" th:text="${completedRentals}">0</div>
+                <div class="stat-lbl">Completed</div>
+            </div>
+        </div>
+
+        <!-- Rental Table -->
+        <div th:if="${rentals != null and !rentals.isEmpty()}">
+            <table class="rental-table">
                 <thead>
-                <tr style="border-bottom: 2px solid #1a1a2e;">
-                    <th style="color: #1a1a2e; font-weight: 500;">Rental ID</th>
-                    <th style="color: #1a1a2e; font-weight: 500;">User ID</th>
-                    <th style="color: #1a1a2e; font-weight: 500;">Bike ID</th>
-                    <th style="color: #1a1a2e; font-weight: 500;">Start Date</th>
-                    <th style="color: #1a1a2e; font-weight: 500;">End Date</th>
-                    <th style="color: #1a1a2e; font-weight: 500;">Status</th>
-                    <th style="color: #1a1a2e; font-weight: 500;">Actions</th>
+                <tr>
+                    <th>Rental ID</th>
+                    <th>User ID</th>
+                    <th>Bike ID</th>
+                    <th>Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="rental : ${rentals}">
-                    <td th:text="${rental[0]}"></td>
-                    <td th:text="${rental[1]}"></td>
-                    <td th:text="${rental[2]}"></td>
-                    <td th:text="${rental[3]}"></td>
-                    <td th:text="${rental[4]}"></td>
+                    <td th:text="${rental[0]}">RENT-1</td>
+                    <td th:text="${rental[1]}">U123</td>
+                    <td th:text="${rental[2]}">BIKE-001</td>
                     <td>
-                            <span th:text="${rental[5]}"
-                                  th:style="${rental[5] == 'ACTIVE'} ? 'background:#e8f5e9; color:#2e7d32; padding: 4px 10px; border-radius: 20px; font-size: 12px;' : 'background:#fce4ec; color:#c62828; padding: 4px 10px; border-radius: 20px; font-size: 12px;'">
-                            </span>
+                        <span th:if="${rental[3] == 'HOURLY'}" class="badge-hourly">Hourly</span>
+                        <span th:if="${rental[3] == 'DAILY'}"  class="badge-daily">Daily</span>
+                    </td>
+                    <td th:text="${rental[4]}">2024-01-01</td>
+                    <td th:text="${rental[5]}">2024-01-02</td>
+                    <td>
+                        <span th:if="${rental[6] == 'ACTIVE'}"    class="badge-active">Active</span>
+                        <span th:if="${rental[6] == 'COMPLETED'}" class="badge-completed">Completed</span>
                     </td>
                     <td>
-                        <a th:href="@{/rentals/return/{id}(id=${rental[0]})}"
-                           style="background: #1a1a2e; color: white; padding: 4px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; margin-right: 4px;">Return</a>
-                        <a th:href="@{/rentals/delete/{id}(id=${rental[0]})}"
-                           style="background: #e94560; color: white; padding: 4px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">Delete</a>
+                        <div class="d-flex gap-2">
+                            <a th:if="${rental[6] == 'ACTIVE'}"
+                               th:href="@{/rentals/return/{id}(id=${rental[0]})}"
+                               class="btn-return">Return</a>
+                            <a th:href="@{/rentals/delete/{id}(id=${rental[0]})}"
+                               class="btn-delete"
+                               onclick="return confirm('Delete this rental?')">Delete</a>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+
+        <!-- Empty State -->
+        <div th:if="${rentals == null or rentals.isEmpty()}" class="empty-msg">
+            No rentals found. <a th:href="@{/rentals/rent}" class="btn-main" style="margin-left:8px;">Start First Rental</a>
+        </div>
+
     </div>
 </div>
 </body>

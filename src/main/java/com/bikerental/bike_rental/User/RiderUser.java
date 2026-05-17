@@ -1,5 +1,6 @@
 package com.bikerental.bike_rental.User;
 
+
 // Inheritance
 public class RiderUser extends User {
 

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Payment History</title>
+    <style>
+        .history-section {
+            padding: 40px 24px;
+            min-height: calc(100vh - 60px);
+            width: 100%;
+            box-sizing: border-box;
+            background: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+        .top-bar h2 {
+            font-size: 22px;
+            font-family: Georgia, serif;
+            color: #2c2c2c;
+            margin: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0057b8;
+        }
+        .table-wrap {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        thead {
+            background: #2c2c2c;
+            color: white;
+        }
+        thead th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: normal;
+            letter-spacing: 0.3px;
+        }
+        tbody tr { border-bottom: 1px solid #eee; }
+        tbody tr:hover { background: #f9f9f9; }
+        tbody td { padding: 13px 16px; color: #444; }
+        .badge-completed {
+            background: #d4edda;
+            color: #155724;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .badge-rental {
+            background: #cce5ff;
+            color: #004085;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        .badge-ride {
+            background: #e2d9f3;
+            color: #4a235a;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        .empty-msg {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+            font-size: 14px;
+        }
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 14px;
+            font-size: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .delete-btn:hover { background: #b02a37; }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="history-section">
+        <div class="top-bar">
+            <h2>Payment History</h2>
+            <a th:href="@{/payment}" class="btn-main">+ New Payment</a>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Type</th>
+                    <th>User ID</th>
+                    <th>Amount (LKR)</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="payment : ${payments}">
+                    <td th:text="${payment[0]}">PAY-1</td>
+                    <td>
+                            <span class="badge-rental"
+                                  th:if="${payment[1] == 'RENTAL'}">RENTAL</span>
+                        <span class="badge-ride"
+                              th:if="${payment[1] == 'RIDE'}">RIDE</span>
+                    </td>
+                    <td th:text="${payment[2]}">USR-1</td>
+                    <td th:text="${payment[3]}">0.00</td>
+                    <td th:text="${payment[4]}">2026-05-16</td>
+                    <td>
+                            <span class="badge-completed"
+                                  th:if="${payment[5] == 'COMPLETED'}">COMPLETED</span>
+                        <span class="badge-pending"
+                              th:if="${payment[5] == 'PENDING'}">PENDING</span>
+                    </td>
+                    <td>
+                        <form th:action="@{/payment/delete/{id}(id=${payment[0]})}"
+                              method="post"
+                              onsubmit="return confirm('Delete this payment?')">
+                            <button type="submit" class="delete-btn">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(payments)}">
+                    <td colspan="7" class="empty-msg">
+                        No payments found. <a th:href="@{/payment}"
+                                              style="color:#0057b8;">Make a payment</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

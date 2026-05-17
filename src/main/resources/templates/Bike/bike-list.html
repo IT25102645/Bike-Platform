@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Bikes</title>
+    <style>
+        .section{padding:24px;}
+        .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #ddd;}
+        .toolbar h2{margin:0;font-size:15px;font-family:Georgia,serif;color:#2c2c2c;}
+
+        .bike-table{width:100%;border-collapse:collapse;background:white;border:1px solid #ddd;border-radius:4px;overflow:hidden;font-size:13px;}
+        .bike-table th{background:#2c2c2c;color:#ccc;padding:10px 14px;text-align:left;font-weight:normal;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;}
+        .bike-table td{padding:10px 14px;border-bottom:1px solid #eee;color:#333;}
+        .bike-table tr:last-child td{border-bottom:none;}
+        .bike-table tr:hover td{background:#f9f9f9;}
+
+        .badge-av{background:#d4edda;color:#155724;font-size:11px;padding:3px 8px;border-radius:3px;}
+        .badge-un{background:#f8d7da;color:#721c24;font-size:11px;padding:3px 8px;border-radius:3px;}
+        .badge-el{background:#d0e8ff;color:#003d82;font-size:11px;padding:3px 8px;border-radius:3px;}
+        .badge-mn{background:#e8f5e9;color:#1b5e20;font-size:11px;padding:3px 8px;border-radius:3px;}
+
+        .btn-edit{background:#0057b8;color:white;border:none;padding:5px 12px;border-radius:3px;font-size:12px;cursor:pointer;text-decoration:none;}
+        .btn-delete{background:#dc3545;color:white;border:none;padding:5px 12px;border-radius:3px;font-size:12px;cursor:pointer;}
+        .btn-edit:hover{background:#004494;color:white;}
+        .btn-delete:hover{background:#b02a37;}
+
+        .empty-msg{text-align:center;padding:40px;color:#999;font-size:13px;}
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="section">
+        <div class="toolbar">
+            <h2>All Bikes</h2>
+            <div style="display:flex;gap:8px;">
+                <a th:href="@{/bikes/search}" class="btn-main" style="background:#6c757d;">Search</a>
+                <a th:href="@{/bikes/add}" class="btn-main">+ Add Bike</a>
+            </div>
+        </div>
+
+        <!-- Bike Table -->
+        <div th:if="${bikes != null and !bikes.isEmpty()}">
+            <table class="bike-table">
+                <thead>
+                <tr>
+                    <th>Bike ID</th>
+                    <th>Type</th>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Price / Hr</th>
+                    <th>Owner</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="bike : ${bikes}">
+                    <td th:text="${bike.bikeId}">BIKE-001</td>
+                    <td>
+                        <span th:if="${bike.bikeType == 'ELECTRIC'}" class="badge-el">Electric</span>
+                        <span th:if="${bike.bikeType == 'MANUAL'}"   class="badge-mn">Manual</span>
+                    </td>
+                    <td th:text="${bike.brand}">Giant</td>
+                    <td th:text="${bike.model}">Trance Pro</td>
+                    <td th:text="'LKR ' + ${bike.pricePerHour}">LKR 250</td>
+                    <td th:text="${bike.ownerUsername}">nimal</td>
+                    <td>
+                        <span th:if="${bike.available}"  class="badge-av">Available</span>
+                        <span th:unless="${bike.available}" class="badge-un">Rented</span>
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:6px;">
+                            <a th:href="@{/bikes/edit/{id}(id=${bike.bikeId})}" class="btn-edit">Edit</a>
+                            <form th:action="@{/bikes/delete/{id}(id=${bike.bikeId})}" method="post"
+                                  onsubmit="return confirm('Delete this bike?')">
+                                <button type="submit" class="btn-delete">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${bikes == null or bikes.isEmpty()}" class="empty-msg">
+            No bikes found. <a th:href="@{/bikes/add}" class="btn-main" style="margin-left:8px;">Add First Bike</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

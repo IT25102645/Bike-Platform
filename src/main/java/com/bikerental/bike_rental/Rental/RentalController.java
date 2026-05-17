@@ -5,6 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/rentals")
 public class RentalController {
@@ -14,14 +16,20 @@ public class RentalController {
 
     @GetMapping
     public String listRentals(Model model) {
-        model.addAttribute("rentals", rentalService.getAllRentals());
-        model.addAttribute("totalRentals", rentalService.getAllRentals().size());
+        List<String[]> rentals = rentalService.getAllRentals();
+        long active = rentals.stream().filter(r -> r[6].equals("ACTIVE")).count();
+        long completed = rentals.stream().filter(r -> r[6].equals("COMPLETED")).count();
+        model.addAttribute("rentals", rentals);
+        model.addAttribute("totalRentals", rentals.size());
+        model.addAttribute("activeRentals", active);
+        model.addAttribute("completedRentals", completed);
         return "Rental/rental-history";
     }
 
     @GetMapping("/rent")
-    public String rentBikeForm(Model model) {
+    public String rentBikeForm(@RequestParam(required = false) String bikeId, Model model) {
         model.addAttribute("minDate", java.time.LocalDate.now().toString());
+        model.addAttribute("bikeId", bikeId);
         return "Rental/rent-bike";
     }
 

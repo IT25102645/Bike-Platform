@@ -1,5 +1,6 @@
 package com.bikerental.bike_rental.User;
 
+
 // Encapsulation
 public class User {
 
@@ -45,6 +46,7 @@ public class User {
         return userId + "," + name + "," + email + "," + password + "," + phone + "," + getRole();
     }
 
+    // toString
 
     @Override
     public String toString() {
@@ -57,3 +59,4 @@ public class User {
                 '}';
     }
 }
+

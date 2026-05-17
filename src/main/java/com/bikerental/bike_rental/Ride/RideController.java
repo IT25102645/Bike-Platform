@@ -18,7 +18,7 @@ public class RideController {
     public String listRides(Model model) {
         model.addAttribute("rides", rideService.getAllRides());
         model.addAttribute("totalRides", rideService.getAllRides().size());
-        return "Ride/ride-listing";
+        return "Ride/ride-list";
     }
 
     // CREATE - Show create ride form

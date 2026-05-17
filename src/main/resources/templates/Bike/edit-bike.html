@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Edit Bike</title>
+    <style>
+        .section{padding:24px;}
+        .form-card{max-width:600px;background:white;border:1px solid #ddd;border-radius:4px;padding:24px;}
+        .form-group{margin-bottom:16px;}
+        .form-group label{display:block;font-size:12px;font-weight:bold;color:#666;margin-bottom:6px;text-transform:uppercase;}
+        .form-control{width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:3px;font-size:13px;color:#333;background:#fafafa;}
+        .form-control:focus{outline:none;border-color:#0057b8;background:white;}
+        .form-control[readonly]{background:#f0f0f0;color:#888;cursor:not-allowed;}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+        .extra-fields{border:1px solid #e0e8f0;border-radius:4px;padding:16px;margin-top:8px;background:#f7faff;}
+        .extra-fields h4{font-size:13px;color:#0057b8;margin-bottom:12px;}
+        .alert{padding:10px 14px;border-radius:3px;font-size:13px;margin-bottom:16px;}
+        .alert-success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
+        .alert-danger{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+        .bike-id-badge{display:inline-block;background:#f0f0f0;border:1px solid #ddd;border-radius:3px;padding:4px 10px;font-size:12px;color:#666;margin-bottom:16px;}
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="section">
+        <div style="font-size:16px;font-family:Georgia,serif;color:#2c2c2c;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #ddd;">
+            Edit Bike
+        </div>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}"   class="alert alert-danger"  th:text="${error}"></div>
+
+        <div th:if="${bike != null}" class="form-card">
+            <div class="bike-id-badge" th:text="'Bike ID: ' + ${bike.bikeId}">Bike ID</div>
+
+            <form th:action="@{/bikes/edit/{id}(id=${bike.bikeId})}" method="post">
+
+                <div class="form-group">
+                    <label>Bike Type</label>
+                    <input type="text" class="form-control" th:value="${bike.bikeType}" readonly />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Model</label>
+                        <input type="text" name="model" class="form-control" th:value="${bike.model}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Brand</label>
+                        <input type="text" name="brand" class="form-control" th:value="${bike.brand}" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price Per Hour (LKR)</label>
+                        <input type="number" name="pricePerHour" class="form-control" step="0.01" th:value="${bike.pricePerHour}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Availability</label>
+                        <select name="available" class="form-control">
+                            <option value="true"  th:selected="${bike.available}">Available</option>
+                            <option value="false" th:selected="${!bike.available}">Unavailable</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" class="form-control" rows="3" th:text="${bike.description}"></textarea>
+                </div>
+
+                <!-- Electric Bike Fields -->
+                <div th:if="${bike.bikeType == 'ELECTRIC'}" class="extra-fields">
+                    <h4>⚡ Electric Bike Details</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Battery Range (KM)</label>
+                            <input type="number" name="batteryRangeKm" class="form-control" th:value="${bike.batteryRangeKm}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Charging Fee Per Hour (LKR)</label>
+                            <input type="number" name="chargingFeePerHour" class="form-control" step="0.01" th:value="${bike.chargingFeePerHour}" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual Bike Fields -->
+                <div th:if="${bike.bikeType == 'MANUAL'}" class="extra-fields">
+                    <h4>🚲 Manual Bike Details</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Gear Count</label>
+                            <input type="number" name="gearCount" class="form-control" th:value="${bike.gearCount}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Long Rental Discount Rate</label>
+                            <input type="number" name="longRentalDiscountRate" class="form-control" step="0.01" th:value="${bike.longRentalDiscountRate}" />
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:16px;display:flex;gap:12px;">
+                    <button type="submit" class="btn-main">Save Changes</button>
+                    <a th:href="@{/bikes}" class="btn-main" style="background:#6c757d;">Cancel</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

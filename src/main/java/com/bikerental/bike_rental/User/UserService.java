@@ -12,7 +12,7 @@ public class UserService {
 
     //  File Path
 
-    private static final String FILE_PATH = "users.txt";
+    private static final String FILE_PATH = "src/main/resources/static/user.txt";
 
 
     //  CREATE - Register a new user and save to users.txt
