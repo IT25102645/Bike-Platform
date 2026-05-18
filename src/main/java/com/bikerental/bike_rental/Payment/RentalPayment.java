@@ -3,7 +3,7 @@ package com.bikerental.bike_rental.Payment;
 // Inheritance - RentalPayment extends Payment
 public class RentalPayment extends Payment {
 
-    private String rentalId;      // matches RentalService → "RENT-1"
+    private String rentalId;     
     private int    durationHours;
     private double pricePerHour;
 
