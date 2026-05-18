@@ -3,7 +3,7 @@ package com.bikerental.bike_rental.Payment;
 // Inheritance - RidePayment extends Payment
 public class RidePayment extends Payment {
 
-    private String rideId;        // matches RideService → "RIDE-1"
+    private String rideId;      
     private double distanceKm;
     private double ratePerKm;
 
