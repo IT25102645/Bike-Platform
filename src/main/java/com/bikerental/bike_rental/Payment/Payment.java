@@ -38,7 +38,7 @@ public abstract class Payment {
     public void setPaymentDate(String paymentDate) { this.paymentDate = paymentDate; }
     public void setStatus(String status)           { this.status      = status; }
 
-    // File Handling Helper - same pattern as Rental/Ride (| separator)
+    // File Handling Helper 
     public String toFileString() {
         return paymentId + "|" + getPaymentType() + "|" + userId + "|" +
                 amount + "|" + paymentDate + "|" + status;
