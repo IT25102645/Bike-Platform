@@ -102,11 +102,7 @@
                         </td>
                         <td th:text="${review[3]}"></td>
                         <td>
-                            <span class="stars">
-                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                                    <span th:classappend="${i <= #numbers.formatInteger(review[4], 1)} ? '' : 'empty'">&#9733;</span>
-                                </th:block>
-                            </span>
+                            <span class="stars" th:text="${review[4]} + '/5'"></span>
                         </td>
                         <td class="comment-cell" th:text="${review[5]}"></td>
                         <td th:text="${review[6]}"></td>
