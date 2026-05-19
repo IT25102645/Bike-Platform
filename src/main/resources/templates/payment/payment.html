@@ -123,7 +123,7 @@
 
         <!-- Rental Payment Form -->
         <div id="rentalTab" class="form-card">
-            <form th:action="@{/payment/rental}" method="post">
+            <form th:action="@{/payments/rental}" method="post">
                 <div class="form-group">
                     <label>User ID</label>
                     <input type="text" name="userId" placeholder="Enter User ID" required/>
@@ -146,7 +146,7 @@
 
         <!-- Ride Payment Form -->
         <div id="rideTab" class="form-card" style="display:none;">
-            <form th:action="@{/payment/ride}" method="post">
+            <form th:action="@{/payments/ride}" method="post">
                 <div class="form-group">
                     <label>User ID</label>
                     <input type="text" name="userId" placeholder="Enter User ID" required/>
